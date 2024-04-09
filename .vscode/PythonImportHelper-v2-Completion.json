@@ -1,0 +1,317 @@
+[
+    {
+        "label": "annotations",
+        "importPath": "__future__",
+        "description": "__future__",
+        "isExtraImport": true,
+        "detail": "__future__",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "site",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "site",
+        "description": "site",
+        "detail": "site",
+        "documentation": {}
+    },
+    {
+        "label": "sys",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sys",
+        "description": "sys",
+        "detail": "sys",
+        "documentation": {}
+    },
+    {
+        "label": "Coordinates",
+        "importPath": "coordinates",
+        "description": "coordinates",
+        "isExtraImport": true,
+        "detail": "coordinates",
+        "documentation": {}
+    },
+    {
+        "label": "Coordinates",
+        "importPath": "coordinates",
+        "description": "coordinates",
+        "isExtraImport": true,
+        "detail": "coordinates",
+        "documentation": {}
+    },
+    {
+        "label": "Coordinates",
+        "importPath": "coordinates",
+        "description": "coordinates",
+        "isExtraImport": true,
+        "detail": "coordinates",
+        "documentation": {}
+    },
+    {
+        "label": "Coordinates",
+        "importPath": "coordinates",
+        "description": "coordinates",
+        "isExtraImport": true,
+        "detail": "coordinates",
+        "documentation": {}
+    },
+    {
+        "label": "Enum",
+        "importPath": "enum",
+        "description": "enum",
+        "isExtraImport": true,
+        "detail": "enum",
+        "documentation": {}
+    },
+    {
+        "label": "randint",
+        "importPath": "random",
+        "description": "random",
+        "isExtraImport": true,
+        "detail": "random",
+        "documentation": {}
+    },
+    {
+        "label": "randint",
+        "importPath": "random",
+        "description": "random",
+        "isExtraImport": true,
+        "detail": "random",
+        "documentation": {}
+    },
+    {
+        "label": "Entity",
+        "importPath": "entity",
+        "description": "entity",
+        "isExtraImport": true,
+        "detail": "entity",
+        "documentation": {}
+    },
+    {
+        "label": "Entity",
+        "importPath": "entity",
+        "description": "entity",
+        "isExtraImport": true,
+        "detail": "entity",
+        "documentation": {}
+    },
+    {
+        "label": "Entity",
+        "importPath": "entity",
+        "description": "entity",
+        "isExtraImport": true,
+        "detail": "entity",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Orb",
+        "importPath": "orb",
+        "description": "orb",
+        "isExtraImport": true,
+        "detail": "orb",
+        "documentation": {}
+    },
+    {
+        "label": "Orb",
+        "importPath": "orb",
+        "description": "orb",
+        "isExtraImport": true,
+        "detail": "orb",
+        "documentation": {}
+    },
+    {
+        "label": "Hole",
+        "importPath": "hole",
+        "description": "hole",
+        "isExtraImport": true,
+        "detail": "hole",
+        "documentation": {}
+    },
+    {
+        "label": "Hole",
+        "importPath": "hole",
+        "description": "hole",
+        "isExtraImport": true,
+        "detail": "hole",
+        "documentation": {}
+    },
+    {
+        "label": "bin_dir",
+        "kind": 5,
+        "importPath": "env.bin.activate_this",
+        "description": "env.bin.activate_this",
+        "peekOfCode": "bin_dir = os.path.dirname(abs_file)\nbase = bin_dir[: -len(\"bin\") - 1]  # strip away the bin part from the __file__, plus the path separator\n# prepend bin to PATH (this file is inside the bin directory)\nos.environ[\"PATH\"] = os.pathsep.join([bin_dir, *os.environ.get(\"PATH\", \"\").split(os.pathsep)])\nos.environ[\"VIRTUAL_ENV\"] = base  # virtual env is right above bin directory\nos.environ[\"VIRTUAL_ENV_PROMPT\"] = \"\" or os.path.basename(base)  # noqa: SIM222\n# add the virtual environments libraries to the host python import mechanism\nprev_length = len(sys.path)\nfor lib in \"../lib/python3.11/site-packages\".split(os.pathsep):\n    path = os.path.realpath(os.path.join(bin_dir, lib))",
+        "detail": "env.bin.activate_this",
+        "documentation": {}
+    },
+    {
+        "label": "base",
+        "kind": 5,
+        "importPath": "env.bin.activate_this",
+        "description": "env.bin.activate_this",
+        "peekOfCode": "base = bin_dir[: -len(\"bin\") - 1]  # strip away the bin part from the __file__, plus the path separator\n# prepend bin to PATH (this file is inside the bin directory)\nos.environ[\"PATH\"] = os.pathsep.join([bin_dir, *os.environ.get(\"PATH\", \"\").split(os.pathsep)])\nos.environ[\"VIRTUAL_ENV\"] = base  # virtual env is right above bin directory\nos.environ[\"VIRTUAL_ENV_PROMPT\"] = \"\" or os.path.basename(base)  # noqa: SIM222\n# add the virtual environments libraries to the host python import mechanism\nprev_length = len(sys.path)\nfor lib in \"../lib/python3.11/site-packages\".split(os.pathsep):\n    path = os.path.realpath(os.path.join(bin_dir, lib))\n    site.addsitedir(path.decode(\"utf-8\") if \"\" else path)",
+        "detail": "env.bin.activate_this",
+        "documentation": {}
+    },
+    {
+        "label": "os.environ[\"PATH\"]",
+        "kind": 5,
+        "importPath": "env.bin.activate_this",
+        "description": "env.bin.activate_this",
+        "peekOfCode": "os.environ[\"PATH\"] = os.pathsep.join([bin_dir, *os.environ.get(\"PATH\", \"\").split(os.pathsep)])\nos.environ[\"VIRTUAL_ENV\"] = base  # virtual env is right above bin directory\nos.environ[\"VIRTUAL_ENV_PROMPT\"] = \"\" or os.path.basename(base)  # noqa: SIM222\n# add the virtual environments libraries to the host python import mechanism\nprev_length = len(sys.path)\nfor lib in \"../lib/python3.11/site-packages\".split(os.pathsep):\n    path = os.path.realpath(os.path.join(bin_dir, lib))\n    site.addsitedir(path.decode(\"utf-8\") if \"\" else path)\nsys.path[:] = sys.path[prev_length:] + sys.path[0:prev_length]\nsys.real_prefix = sys.prefix",
+        "detail": "env.bin.activate_this",
+        "documentation": {}
+    },
+    {
+        "label": "os.environ[\"VIRTUAL_ENV\"]",
+        "kind": 5,
+        "importPath": "env.bin.activate_this",
+        "description": "env.bin.activate_this",
+        "peekOfCode": "os.environ[\"VIRTUAL_ENV\"] = base  # virtual env is right above bin directory\nos.environ[\"VIRTUAL_ENV_PROMPT\"] = \"\" or os.path.basename(base)  # noqa: SIM222\n# add the virtual environments libraries to the host python import mechanism\nprev_length = len(sys.path)\nfor lib in \"../lib/python3.11/site-packages\".split(os.pathsep):\n    path = os.path.realpath(os.path.join(bin_dir, lib))\n    site.addsitedir(path.decode(\"utf-8\") if \"\" else path)\nsys.path[:] = sys.path[prev_length:] + sys.path[0:prev_length]\nsys.real_prefix = sys.prefix\nsys.prefix = base",
+        "detail": "env.bin.activate_this",
+        "documentation": {}
+    },
+    {
+        "label": "os.environ[\"VIRTUAL_ENV_PROMPT\"]",
+        "kind": 5,
+        "importPath": "env.bin.activate_this",
+        "description": "env.bin.activate_this",
+        "peekOfCode": "os.environ[\"VIRTUAL_ENV_PROMPT\"] = \"\" or os.path.basename(base)  # noqa: SIM222\n# add the virtual environments libraries to the host python import mechanism\nprev_length = len(sys.path)\nfor lib in \"../lib/python3.11/site-packages\".split(os.pathsep):\n    path = os.path.realpath(os.path.join(bin_dir, lib))\n    site.addsitedir(path.decode(\"utf-8\") if \"\" else path)\nsys.path[:] = sys.path[prev_length:] + sys.path[0:prev_length]\nsys.real_prefix = sys.prefix\nsys.prefix = base",
+        "detail": "env.bin.activate_this",
+        "documentation": {}
+    },
+    {
+        "label": "prev_length",
+        "kind": 5,
+        "importPath": "env.bin.activate_this",
+        "description": "env.bin.activate_this",
+        "peekOfCode": "prev_length = len(sys.path)\nfor lib in \"../lib/python3.11/site-packages\".split(os.pathsep):\n    path = os.path.realpath(os.path.join(bin_dir, lib))\n    site.addsitedir(path.decode(\"utf-8\") if \"\" else path)\nsys.path[:] = sys.path[prev_length:] + sys.path[0:prev_length]\nsys.real_prefix = sys.prefix\nsys.prefix = base",
+        "detail": "env.bin.activate_this",
+        "documentation": {}
+    },
+    {
+        "label": "sys.path[:]",
+        "kind": 5,
+        "importPath": "env.bin.activate_this",
+        "description": "env.bin.activate_this",
+        "peekOfCode": "sys.path[:] = sys.path[prev_length:] + sys.path[0:prev_length]\nsys.real_prefix = sys.prefix\nsys.prefix = base",
+        "detail": "env.bin.activate_this",
+        "documentation": {}
+    },
+    {
+        "label": "sys.real_prefix",
+        "kind": 5,
+        "importPath": "env.bin.activate_this",
+        "description": "env.bin.activate_this",
+        "peekOfCode": "sys.real_prefix = sys.prefix\nsys.prefix = base",
+        "detail": "env.bin.activate_this",
+        "documentation": {}
+    },
+    {
+        "label": "sys.prefix",
+        "kind": 5,
+        "importPath": "env.bin.activate_this",
+        "description": "env.bin.activate_this",
+        "peekOfCode": "sys.prefix = base",
+        "detail": "env.bin.activate_this",
+        "documentation": {}
+    },
+    {
+        "label": "Direction",
+        "kind": 6,
+        "importPath": "agent",
+        "description": "agent",
+        "peekOfCode": "class Direction(Enum):\n    DOWN = 0\n    UP = 2\n    RIGHT = 3\n    LEFT = 1\n    @staticmethod\n    def From(d: int):\n        if d < Direction.DOWN.value or d > Direction.RIGHT.value:\n            raise ValueError('Unknown direction provided.')\n        for v in (Direction.DOWN, Direction.LEFT, Direction.UP, Direction.RIGHT):",
+        "detail": "agent",
+        "documentation": {}
+    },
+    {
+        "label": "Agent",
+        "kind": 6,
+        "importPath": "agent",
+        "description": "agent",
+        "peekOfCode": "class Agent(Entity):\n    def __init__(self, imagePath: str, position: Coordinates | None = None) -> None:\n        super().__init__(id=0, name=\"Smart Agent\", imagePath=imagePath, position=position)\n        self.direction: Direction = Direction.Random()",
+        "detail": "agent",
+        "documentation": {}
+    },
+    {
+        "label": "Coordinates",
+        "kind": 6,
+        "importPath": "coordinates",
+        "description": "coordinates",
+        "peekOfCode": "class Coordinates:\n    def __init__(self, x: int = 0, y: int = 0) -> None:\n        self.x: int = x \n        self.y: int = y\n    @staticmethod\n    def Random(x_max = 5, y_max = 5):\n        return Coordinates(randint(1, x_max), randint(1, y_max))\n    def Randomize(self, x_max = 5, y_max = 5):\n        self.x, self.y = randint(1, x_max), randint(1, y_max)\n    def __eq__(self, other):",
+        "detail": "coordinates",
+        "documentation": {}
+    },
+    {
+        "label": "Entity",
+        "kind": 6,
+        "importPath": "entity",
+        "description": "entity",
+        "peekOfCode": "class Entity:\n    ALL_ENTITIES = []\n    def __init__(self, id: int, name: str, imagePath: str, position: Coordinates|None = None) -> None:\n        if position:\n            self.position = position\n        else:\n            # if position is not specified, randomise it\n            self.position = Coordinates.Random()\n            while self.overlaps_on_others():\n                self.position.Randomize()",
+        "detail": "entity",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "kind": 6,
+        "importPath": "field",
+        "description": "field",
+        "peekOfCode": "class Field:\n    def __init__(self, width: int = 5, height: int = 5) -> None:\n        self.height: int = height\n        self.width: int = width\n        self.orbs: List[Orb] = []\n        self.holes: List[Hole] = []",
+        "detail": "field",
+        "documentation": {}
+    },
+    {
+        "label": "Hole",
+        "kind": 6,
+        "importPath": "hole",
+        "description": "hole",
+        "peekOfCode": "class Hole(Entity):\n    MAX_CAPACITY = 1  # how many orbs can be contained by a single hole\n    def __init__(self, id: int, position: Coordinates | None = None, imagePath: str|None = None) -> None:\n        '''Holes; Holes are empty places inside field which can be filled with orbs. \n            Param Notes: Not specifying coordinates will make it randomise its position, not specifying imagePath will make the app use default image.'''\n        super().__init__(name=\"Hole\", id=id, imagePath=imagePath, position=position)\n        self.orbs: List[Orb] = []  # Demonestrates the orbs that are fropped inside this hole. If the list is empty it means its ready to contain upcomming orbs",
+        "detail": "hole",
+        "documentation": {}
+    },
+    {
+        "label": "Orb",
+        "kind": 6,
+        "importPath": "orb",
+        "description": "orb",
+        "peekOfCode": "class Orb(Entity):\n    def __init__(self, id: int, position: Coordinates | None = None, imagePath: str|None = None) -> None:\n        '''Orbs: orbs are sphere entities which would fill the holes inside the field.\n            Params note: Not specifying coordinates will make it randomise its position, not specifying imagePath will make the app use default image.'''\n        super().__init__(name=\"Orb\", id=id, imagePath=imagePath, position=position)\n        self.hole: Hole|None = None  # The hole which this orb is dropped to. If orb.hole is None it means this orb is still outside in the field",
+        "detail": "orb",
+        "documentation": {}
+    }
+]
