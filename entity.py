@@ -17,7 +17,7 @@ class Entity:
             raise ValueError("Invalid id provided.")
         self.id: int = id
         self.name = name
-        self.alias: str = f"{self.name} #${self.id}"
+        self.alias: str = f"{self.name} #{self.id}"
 
         self.imagePath: str = imagePath  # TODO: Check if image exists
         Entity.ALL_ENTITIES.append(self)
@@ -30,3 +30,14 @@ class Entity:
                return True
 
         return False
+    
+    @staticmethod
+    def GetNextId(entity_list: List[any]) -> int|None:
+        try:
+            return max(entity_list, key=lambda e: e.id).id + 1 if entity_list else 1
+        except:
+            pass
+        return None
+    
+    def __str__(self) -> str:
+        return f"{self.alias} is at {self.position}"

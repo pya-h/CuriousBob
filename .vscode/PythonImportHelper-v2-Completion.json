@@ -67,6 +67,14 @@
         "documentation": {}
     },
     {
+        "label": "Coordinates",
+        "importPath": "coordinates",
+        "description": "coordinates",
+        "isExtraImport": true,
+        "detail": "coordinates",
+        "documentation": {}
+    },
+    {
         "label": "Enum",
         "importPath": "enum",
         "description": "enum",
@@ -147,14 +155,6 @@
         "documentation": {}
     },
     {
-        "label": "Orb",
-        "importPath": "orb",
-        "description": "orb",
-        "isExtraImport": true,
-        "detail": "orb",
-        "documentation": {}
-    },
-    {
         "label": "Hole",
         "importPath": "hole",
         "description": "hole",
@@ -168,6 +168,14 @@
         "description": "hole",
         "isExtraImport": true,
         "detail": "hole",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "field",
+        "description": "field",
+        "isExtraImport": true,
+        "detail": "field",
         "documentation": {}
     },
     {
@@ -292,7 +300,7 @@
         "kind": 6,
         "importPath": "field",
         "description": "field",
-        "peekOfCode": "class Field:\n    def __init__(self, width: int = 5, height: int = 5) -> None:\n        self.height: int = height\n        self.width: int = width\n        self.orbs: List[Orb] = []\n        self.holes: List[Hole] = []",
+        "peekOfCode": "class Field:\n    def __init__(self, width: int = 5, height: int = 5) -> None:\n        self.height: int = height\n        self.width: int = width\n        self.orbs: List[Orb] = []\n        self.holes: List[Hole] = []\n    def add_random_holes(self, number_of_holes: int):\n        if number_of_holes <= 0:\n            raise ValueError('Number of holes must be a positive number.')\n        last_id = Hole.GetNextId(self.holes)",
         "detail": "field",
         "documentation": {}
     },
@@ -301,7 +309,7 @@
         "kind": 6,
         "importPath": "hole",
         "description": "hole",
-        "peekOfCode": "class Hole(Entity):\n    MAX_CAPACITY = 1  # how many orbs can be contained by a single hole\n    def __init__(self, id: int, position: Coordinates | None = None, imagePath: str|None = None) -> None:\n        '''Holes; Holes are empty places inside field which can be filled with orbs. \n            Param Notes: Not specifying coordinates will make it randomise its position, not specifying imagePath will make the app use default image.'''\n        super().__init__(name=\"Hole\", id=id, imagePath=imagePath, position=position)\n        self.orbs: List[Orb] = []  # Demonestrates the orbs that are fropped inside this hole. If the list is empty it means its ready to contain upcomming orbs",
+        "peekOfCode": "class Hole(Entity):\n    MAX_CAPACITY = 1  # how many orbs can be contained by a single hole\n    DEFAULT_IMAGE = '...'\n    def __init__(self, id: int, position: Coordinates | None = None, imagePath: str|None = None) -> None:\n        '''Holes; Holes are empty places inside field which can be filled with orbs. \n            Param Notes: Not specifying coordinates will make it randomise its position, not specifying imagePath will make the app use default image.'''\n        super().__init__(name=\"Hole\", id=id, imagePath=imagePath or Hole.DEFAULT_IMAGE, position=position)\n        self.orbs: List[Entity] = []  # Demonestrates the orbs that are fropped inside this hole. If the list is empty it means its ready to contain upcomming orbs",
         "detail": "hole",
         "documentation": {}
     },
@@ -310,7 +318,7 @@
         "kind": 6,
         "importPath": "orb",
         "description": "orb",
-        "peekOfCode": "class Orb(Entity):\n    def __init__(self, id: int, position: Coordinates | None = None, imagePath: str|None = None) -> None:\n        '''Orbs: orbs are sphere entities which would fill the holes inside the field.\n            Params note: Not specifying coordinates will make it randomise its position, not specifying imagePath will make the app use default image.'''\n        super().__init__(name=\"Orb\", id=id, imagePath=imagePath, position=position)\n        self.hole: Hole|None = None  # The hole which this orb is dropped to. If orb.hole is None it means this orb is still outside in the field",
+        "peekOfCode": "class Orb(Entity):\n    DEFAULT_IMAGE = '...'\n    def __init__(self, id: int, position: Coordinates | None = None, imagePath: str|None = None) -> None:\n        '''Orbs: orbs are sphere entities which would fill the holes inside the field.\n            Params note: Not specifying coordinates will make it randomise its position, not specifying imagePath will make the app use default image.'''\n        super().__init__(name=\"Orb\", id=id, imagePath=imagePath or Orb.DEFAULT_IMAGE, position=position)\n        self.hole: Hole|None = None  # The hole which this orb is dropped to. If orb.hole is None it means this orb is still outside in the field",
         "detail": "orb",
         "documentation": {}
     }

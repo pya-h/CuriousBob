@@ -21,3 +21,6 @@ class Coordinates:
         if not isinstance(other, Coordinates):
             return False
         return self.x == other.x and self.y == other.y
+    
+    def __str__(self) -> str:
+        return f"({self.x}, {self.y})"
