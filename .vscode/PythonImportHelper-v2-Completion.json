@@ -123,7 +123,31 @@
         "documentation": {}
     },
     {
-        "label": "List",
+        "label": "Entity",
+        "importPath": "entity",
+        "description": "entity",
+        "isExtraImport": true,
+        "detail": "entity",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "field",
+        "description": "field",
+        "isExtraImport": true,
+        "detail": "field",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "field",
+        "description": "field",
+        "isExtraImport": true,
+        "detail": "field",
+        "documentation": {}
+    },
+    {
+        "label": "Dict",
         "importPath": "typing",
         "description": "typing",
         "isExtraImport": true,
@@ -144,6 +168,46 @@
         "description": "typing",
         "isExtraImport": true,
         "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Dict",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Hole",
+        "importPath": "hole",
+        "description": "hole",
+        "isExtraImport": true,
+        "detail": "hole",
+        "documentation": {}
+    },
+    {
+        "label": "Hole",
+        "importPath": "hole",
+        "description": "hole",
+        "isExtraImport": true,
+        "detail": "hole",
+        "documentation": {}
+    },
+    {
+        "label": "Hole",
+        "importPath": "hole",
+        "description": "hole",
+        "isExtraImport": true,
+        "detail": "hole",
         "documentation": {}
     },
     {
@@ -155,27 +219,28 @@
         "documentation": {}
     },
     {
-        "label": "Hole",
-        "importPath": "hole",
-        "description": "hole",
+        "label": "Orb",
+        "importPath": "orb",
+        "description": "orb",
         "isExtraImport": true,
-        "detail": "hole",
+        "detail": "orb",
         "documentation": {}
     },
     {
-        "label": "Hole",
-        "importPath": "hole",
-        "description": "hole",
+        "label": "math",
+        "kind": 6,
         "isExtraImport": true,
-        "detail": "hole",
+        "importPath": "math",
+        "description": "math",
+        "detail": "math",
         "documentation": {}
     },
     {
-        "label": "Field",
-        "importPath": "field",
-        "description": "field",
+        "label": "Agent",
+        "importPath": "agent",
+        "description": "agent",
         "isExtraImport": true,
-        "detail": "field",
+        "detail": "agent",
         "documentation": {}
     },
     {
@@ -273,7 +338,7 @@
         "kind": 6,
         "importPath": "agent",
         "description": "agent",
-        "peekOfCode": "class Agent(Entity):\n    def __init__(self, imagePath: str, position: Coordinates | None = None) -> None:\n        super().__init__(id=0, name=\"Smart Agent\", imagePath=imagePath, position=position)\n        self.direction: Direction = Direction.Random()",
+        "peekOfCode": "class Agent(Entity):\n    DEFAULT_IMAGE = '...'\n    def __init__(self, imagePath: str|None = None, position: Coordinates | None = None) -> None:\n        super().__init__(id=0, name=\"Smart Agent\", imagePath=imagePath or Agent.DEFAULT_IMAGE, position=position)\n        self.direction: Direction = Direction.Random()\n        self.moves = 0\n        self.actions = 0\n    def __str__(self) -> str:\n        return f\"{super().__str__()} with direction to {self.direction}\"\n    def look_around(self, field: Field):",
         "detail": "agent",
         "documentation": {}
     },
@@ -300,8 +365,17 @@
         "kind": 6,
         "importPath": "field",
         "description": "field",
-        "peekOfCode": "class Field:\n    def __init__(self, width: int = 5, height: int = 5) -> None:\n        self.height: int = height\n        self.width: int = width\n        self.orbs: List[Orb] = []\n        self.holes: List[Hole] = []\n    def add_random_holes(self, number_of_holes: int):\n        if number_of_holes <= 0:\n            raise ValueError('Number of holes must be a positive number.')\n        last_id = Hole.GetNextId(self.holes)",
+        "peekOfCode": "class Field:\n    def __init__(self, width: int = 5, height: int = 5) -> None:\n        if width < 2 or height < 2:\n            raise ValueError(\"Field dimention cant be that small.\")\n        self.height: int = height\n        self.width: int = width\n        self.orbs: List[Orb] = []\n        self.holes: List[Hole] = []\n        self.cells: Dict[str, Entity|None] = {}\n        self.init_cells()",
         "detail": "field",
+        "documentation": {}
+    },
+    {
+        "label": "Game",
+        "kind": 6,
+        "importPath": "game",
+        "description": "game",
+        "peekOfCode": "class Game:\n    MAX_MOVES = 30\n    def __init__(self, fieldWidth: int = 5, fieldHegiht: int = 5, number_of_holes: int = 5, number_of_height: int = 5,) -> None:\n        self.field = Field(fieldWidth, fieldHegiht)\n        self.agent = Agent()\n        self.field.occupy_cell(self.agent)\n        self.field.add_random_holes(number_of_holes)\n        self.field.add_random_orbs(number_of_height)\n    def simulate(self):\n        self.field.show()",
+        "detail": "game",
         "documentation": {}
     },
     {

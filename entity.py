@@ -18,8 +18,9 @@ class Entity:
         self.id: int = id
         self.name = name
         self.alias: str = f"{self.name} #{self.id}"
-
-        self.imagePath: str = imagePath  # TODO: Check if image exists
+        self.shortname: str = f"{''.join([word[0] for word in self.name.split()])}{self.id if self.id else ''}"
+        self.imagePath: str = imagePath  # TODO: Check if image existss
+        self.identified: bool = False
         Entity.ALL_ENTITIES.append(self)
         
     

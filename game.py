@@ -1,13 +1,20 @@
 from field import Field
+from agent import Agent
 
+class Game:
+    MAX_MOVES = 30
+    def __init__(self, fieldWidth: int = 5, fieldHegiht: int = 5, number_of_holes: int = 5, number_of_height: int = 5,) -> None:
+        self.field = Field(fieldWidth, fieldHegiht)
+        self.agent = Agent()
+        self.field.occupy_cell(self.agent)
+        self.field.add_random_holes(number_of_holes)
+        self.field.add_random_orbs(number_of_height)
+        
+
+    def simulate(self):
+        self.field.show()
+        
 
 if __name__ == '__main__':
-    field = Field()
-    field.add_random_holes(5)
-    field.add_random_orbs(5)
-    
-    for h in field.holes:
-        print(h)
-
-    for o in field.orbs:
-        print(o)
+    game = Game()
+    game.simulate()
