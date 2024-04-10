@@ -3,7 +3,7 @@ from enum import Enum
 from random import randint
 from entity import Entity
 from field import Field
-from typing import Dict
+from typing import Union
 from hole import Hole
 from orb import Orb
 
@@ -49,6 +49,24 @@ class Agent(Entity):
     def __str__(self) -> str:
         return f"{super().__str__()} with direction to {self.direction}"
     
+        
+    def extract_cooordinates(self) -> Union[int, int]:
+        return self.position.x, self.position.y
+
     def look_around(self, field: Field):
         '''Look around in 8 directions and find som holes and orbs'''
-        
+        x, y = self.extract_cooordinates()
+        steps = [-1, 0, 1]
+        new_founds = 0
+        for i in steps:
+            for j in steps:
+                if x + i >= 1 and y + j >= 1 and x + i <= field.width and y + j <= field.height:
+                    cell = Coordinates(x + i, y + j)
+                    entity = field.cells[cell.val()]
+                    if entity and (isinstance(entity, Hole) or isinstance(entity, Orb)):
+                        # identified
+                        entity.identified = True
+                        new_founds += 1
+                        print(cell)
+                        
+        return new_founds

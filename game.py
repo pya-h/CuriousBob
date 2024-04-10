@@ -13,7 +13,7 @@ class Game:
 
     def simulate(self):
         self.field.show()
-        
+        self.agent.look_around(self.field)
 
 if __name__ == '__main__':
     game = Game()

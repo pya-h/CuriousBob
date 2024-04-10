@@ -147,7 +147,7 @@
         "documentation": {}
     },
     {
-        "label": "Dict",
+        "label": "Union",
         "importPath": "typing",
         "description": "typing",
         "isExtraImport": true,
@@ -338,7 +338,7 @@
         "kind": 6,
         "importPath": "agent",
         "description": "agent",
-        "peekOfCode": "class Agent(Entity):\n    DEFAULT_IMAGE = '...'\n    def __init__(self, imagePath: str|None = None, position: Coordinates | None = None) -> None:\n        super().__init__(id=0, name=\"Smart Agent\", imagePath=imagePath or Agent.DEFAULT_IMAGE, position=position)\n        self.direction: Direction = Direction.Random()\n        self.moves = 0\n        self.actions = 0\n    def __str__(self) -> str:\n        return f\"{super().__str__()} with direction to {self.direction}\"\n    def look_around(self, field: Field):",
+        "peekOfCode": "class Agent(Entity):\n    DEFAULT_IMAGE = '...'\n    def __init__(self, imagePath: str|None = None, position: Coordinates | None = None) -> None:\n        super().__init__(id=0, name=\"Smart Agent\", imagePath=imagePath or Agent.DEFAULT_IMAGE, position=position)\n        self.direction: Direction = Direction.Random()\n        self.moves = 0\n        self.actions = 0\n    def __str__(self) -> str:\n        return f\"{super().__str__()} with direction to {self.direction}\"\n    def extract_cooordinates(self) -> Union[int, int]:",
         "detail": "agent",
         "documentation": {}
     },
