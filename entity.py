@@ -1,11 +1,18 @@
 from coordinates import Coordinates
+from enum import Enum
+import math
 from typing import List
 
+class EntityType(Enum):
+    NONE = 0
+    ORB = 1
+    HOLE = 2
+    AGENT = 3
 
 class Entity:
     ALL_ENTITIES = []
     
-    def __init__(self, id: int, name: str, imagePath: str, position: Coordinates|None = None) -> None:
+    def __init__(self, id: int, name: str, imagePath: str, entityType: EntityType = EntityType.NONE, position: Coordinates|None = None) -> None:
         if position:
             self.position = position
         else:
@@ -21,6 +28,7 @@ class Entity:
         self.shortname: str = f"{''.join([word[0] for word in self.name.split()])}{self.id if self.id else ''}"
         self.imagePath: str = imagePath  # TODO: Check if image existss
         self.identified: bool = False
+        self.type = entityType
         Entity.ALL_ENTITIES.append(self)
         
     
@@ -34,6 +42,7 @@ class Entity:
     
     @staticmethod
     def GetNextId(entity_list: List[any]) -> int|None:
+        '''Get next available id for each type of entity.'''
         try:
             return max(entity_list, key=lambda e: e.id).id + 1 if entity_list else 1
         except:
@@ -42,3 +51,8 @@ class Entity:
     
     def __str__(self) -> str:
         return f"{self.alias} is at {self.position}"
+
+    def __sub__(self, other):
+        if not isinstance(other, Entity):
+            raise ValueError("Other operand must an Entity.")
+        return self.position - other.position

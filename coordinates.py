@@ -1,6 +1,5 @@
 from random import randint
 
-
 class Coordinates:
     
     def __init__(self, x: int = 0, y: int = 0) -> None:
@@ -20,7 +19,13 @@ class Coordinates:
         return self.x == other.x and self.y == other.y
     
     def val(self) -> str:
-        return self.__str__()
+        return f"{self.x} {self.y}"
     
     def __str__(self) -> str:
         return f"({self.x}, {self.y})"
+    
+    def __sub__(self, other) -> int:
+        if not isinstance(other, Coordinates):
+            raise ValueError("Other operand coordinates too.")
+        abs = lambda v: v if v >= 0 else -v
+        return abs(self.x - other.x) + abs(self.y - other.y)

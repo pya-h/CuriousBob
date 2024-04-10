@@ -83,6 +83,22 @@
         "documentation": {}
     },
     {
+        "label": "Enum",
+        "importPath": "enum",
+        "description": "enum",
+        "isExtraImport": true,
+        "detail": "enum",
+        "documentation": {}
+    },
+    {
+        "label": "randint",
+        "importPath": "random",
+        "description": "random",
+        "isExtraImport": true,
+        "detail": "random",
+        "documentation": {}
+    },
+    {
         "label": "randint",
         "importPath": "random",
         "description": "random",
@@ -107,7 +123,7 @@
         "documentation": {}
     },
     {
-        "label": "Entity",
+        "label": "EntityType",
         "importPath": "entity",
         "description": "entity",
         "isExtraImport": true,
@@ -123,6 +139,14 @@
         "documentation": {}
     },
     {
+        "label": "EntityType",
+        "importPath": "entity",
+        "description": "entity",
+        "isExtraImport": true,
+        "detail": "entity",
+        "documentation": {}
+    },
+    {
         "label": "Entity",
         "importPath": "entity",
         "description": "entity",
@@ -131,23 +155,55 @@
         "documentation": {}
     },
     {
-        "label": "Field",
-        "importPath": "field",
-        "description": "field",
+        "label": "EntityType",
+        "importPath": "entity",
+        "description": "entity",
         "isExtraImport": true,
-        "detail": "field",
+        "detail": "entity",
         "documentation": {}
     },
     {
-        "label": "Field",
-        "importPath": "field",
-        "description": "field",
+        "label": "Entity",
+        "importPath": "entity",
+        "description": "entity",
         "isExtraImport": true,
-        "detail": "field",
+        "detail": "entity",
+        "documentation": {}
+    },
+    {
+        "label": "EntityType",
+        "importPath": "entity",
+        "description": "entity",
+        "isExtraImport": true,
+        "detail": "entity",
+        "documentation": {}
+    },
+    {
+        "label": "Entity",
+        "importPath": "entity",
+        "description": "entity",
+        "isExtraImport": true,
+        "detail": "entity",
+        "documentation": {}
+    },
+    {
+        "label": "EntityType",
+        "importPath": "entity",
+        "description": "entity",
+        "isExtraImport": true,
+        "detail": "entity",
         "documentation": {}
     },
     {
         "label": "Union",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
         "importPath": "typing",
         "description": "typing",
         "isExtraImport": true,
@@ -211,6 +267,22 @@
         "documentation": {}
     },
     {
+        "label": "Hole",
+        "importPath": "hole",
+        "description": "hole",
+        "isExtraImport": true,
+        "detail": "hole",
+        "documentation": {}
+    },
+    {
+        "label": "Orb",
+        "importPath": "orb",
+        "description": "orb",
+        "isExtraImport": true,
+        "detail": "orb",
+        "documentation": {}
+    },
+    {
         "label": "Orb",
         "importPath": "orb",
         "description": "orb",
@@ -236,11 +308,52 @@
         "documentation": {}
     },
     {
+        "label": "Direction",
+        "importPath": "agent",
+        "description": "agent",
+        "isExtraImport": true,
+        "detail": "agent",
+        "documentation": {}
+    },
+    {
         "label": "Agent",
         "importPath": "agent",
         "description": "agent",
         "isExtraImport": true,
         "detail": "agent",
+        "documentation": {}
+    },
+    {
+        "label": "Candidate",
+        "importPath": "agent",
+        "description": "agent",
+        "isExtraImport": true,
+        "detail": "agent",
+        "documentation": {}
+    },
+    {
+        "label": "Direction",
+        "importPath": "agent",
+        "description": "agent",
+        "isExtraImport": true,
+        "detail": "agent",
+        "documentation": {}
+    },
+    {
+        "label": "Field",
+        "importPath": "field",
+        "description": "field",
+        "isExtraImport": true,
+        "detail": "field",
+        "documentation": {}
+    },
+    {
+        "label": "time",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "time",
+        "description": "time",
+        "detail": "time",
         "documentation": {}
     },
     {
@@ -334,11 +447,20 @@
         "documentation": {}
     },
     {
+        "label": "Candidate",
+        "kind": 6,
+        "importPath": "agent",
+        "description": "agent",
+        "peekOfCode": "class Candidate:\n    def __init__(self, orb: Orb, hole: Hole) -> None:\n        self.orb = orb\n        self.hole = hole\n    @property\n    def distance(self):\n        return self.orb - self.hole\n    def drop(self):\n        if not self.hole.has_room():\n            raise ValueError(\"Hole cant be full for drop\")",
+        "detail": "agent",
+        "documentation": {}
+    },
+    {
         "label": "Agent",
         "kind": 6,
         "importPath": "agent",
         "description": "agent",
-        "peekOfCode": "class Agent(Entity):\n    DEFAULT_IMAGE = '...'\n    def __init__(self, imagePath: str|None = None, position: Coordinates | None = None) -> None:\n        super().__init__(id=0, name=\"Smart Agent\", imagePath=imagePath or Agent.DEFAULT_IMAGE, position=position)\n        self.direction: Direction = Direction.Random()\n        self.moves = 0\n        self.actions = 0\n    def __str__(self) -> str:\n        return f\"{super().__str__()} with direction to {self.direction}\"\n    def extract_cooordinates(self) -> Union[int, int]:",
+        "peekOfCode": "class Agent(Entity):\n    DEFAULT_IMAGE = '...'\n    def __init__(self, imagePath: str|None = None, position: Coordinates | None = None) -> None:\n        super().__init__(id=0, name=\"Smart Agent\", imagePath=imagePath or Agent.DEFAULT_IMAGE, entityType=EntityType.AGENT, position=position)\n        self.direction: Direction = Direction.Random()\n        self.moves = 0\n        self.actions = 0\n    def __str__(self) -> str:\n        return f\"{super().__str__()} with direction to {self.direction}\"\n    def extract_cooordinates(self) -> Union[int, int]:",
         "detail": "agent",
         "documentation": {}
     },
@@ -352,11 +474,20 @@
         "documentation": {}
     },
     {
+        "label": "EntityType",
+        "kind": 6,
+        "importPath": "entity",
+        "description": "entity",
+        "peekOfCode": "class EntityType(Enum):\n    NONE = 0\n    ORB = 1\n    HOLE = 2\n    AGENT = 3\nclass Entity:\n    ALL_ENTITIES = []\n    def __init__(self, id: int, name: str, imagePath: str, entityType: EntityType = EntityType.NONE, position: Coordinates|None = None) -> None:\n        if position:\n            self.position = position",
+        "detail": "entity",
+        "documentation": {}
+    },
+    {
         "label": "Entity",
         "kind": 6,
         "importPath": "entity",
         "description": "entity",
-        "peekOfCode": "class Entity:\n    ALL_ENTITIES = []\n    def __init__(self, id: int, name: str, imagePath: str, position: Coordinates|None = None) -> None:\n        if position:\n            self.position = position\n        else:\n            # if position is not specified, randomise it\n            self.position = Coordinates.Random()\n            while self.overlaps_on_others():\n                self.position.Randomize()",
+        "peekOfCode": "class Entity:\n    ALL_ENTITIES = []\n    def __init__(self, id: int, name: str, imagePath: str, entityType: EntityType = EntityType.NONE, position: Coordinates|None = None) -> None:\n        if position:\n            self.position = position\n        else:\n            # if position is not specified, randomise it\n            self.position = Coordinates.Random()\n            while self.overlaps_on_others():\n                self.position.Randomize()",
         "detail": "entity",
         "documentation": {}
     },
@@ -365,7 +496,7 @@
         "kind": 6,
         "importPath": "field",
         "description": "field",
-        "peekOfCode": "class Field:\n    def __init__(self, width: int = 5, height: int = 5) -> None:\n        if width < 2 or height < 2:\n            raise ValueError(\"Field dimention cant be that small.\")\n        self.height: int = height\n        self.width: int = width\n        self.orbs: List[Orb] = []\n        self.holes: List[Hole] = []\n        self.cells: Dict[str, Entity|None] = {}\n        self.init_cells()",
+        "peekOfCode": "class Field:\n    def __init__(self, width: int = 5, height: int = 5) -> None:\n        if width < 2 or height < 2:\n            raise ValueError(\"Field dimention cant be that small.\")\n        self.height: int = height\n        self.width: int = width\n        self.orbs: List[Orb] = []\n        self.holes: List[Hole] = []\n        self.cells: Dict[str, Entity|None] = {}\n        self.extra: Dict[str, Entity|None] = {}",
         "detail": "field",
         "documentation": {}
     },
@@ -374,7 +505,7 @@
         "kind": 6,
         "importPath": "game",
         "description": "game",
-        "peekOfCode": "class Game:\n    MAX_MOVES = 30\n    def __init__(self, fieldWidth: int = 5, fieldHegiht: int = 5, number_of_holes: int = 5, number_of_height: int = 5,) -> None:\n        self.field = Field(fieldWidth, fieldHegiht)\n        self.agent = Agent()\n        self.field.occupy_cell(self.agent)\n        self.field.add_random_holes(number_of_holes)\n        self.field.add_random_orbs(number_of_height)\n    def simulate(self):\n        self.field.show()",
+        "peekOfCode": "class Game:\n    MAX_MOVES = 30\n    def __init__(self, fieldWidth: int = 5, fieldHegiht: int = 5, number_of_holes: int = 5, number_of_height: int = 5,) -> None:\n        self.field = Field(fieldWidth, fieldHegiht)\n        self.agent = Agent()\n        # self.field.occupy_cell(self.agent)\n        self.field.add_random_holes(number_of_holes)\n        self.field.add_random_orbs(number_of_height)\n    def simulate(self):\n        candidate: Candidate = None",
         "detail": "game",
         "documentation": {}
     },
@@ -383,7 +514,7 @@
         "kind": 6,
         "importPath": "hole",
         "description": "hole",
-        "peekOfCode": "class Hole(Entity):\n    MAX_CAPACITY = 1  # how many orbs can be contained by a single hole\n    DEFAULT_IMAGE = '...'\n    def __init__(self, id: int, position: Coordinates | None = None, imagePath: str|None = None) -> None:\n        '''Holes; Holes are empty places inside field which can be filled with orbs. \n            Param Notes: Not specifying coordinates will make it randomise its position, not specifying imagePath will make the app use default image.'''\n        super().__init__(name=\"Hole\", id=id, imagePath=imagePath or Hole.DEFAULT_IMAGE, position=position)\n        self.orbs: List[Entity] = []  # Demonestrates the orbs that are fropped inside this hole. If the list is empty it means its ready to contain upcomming orbs",
+        "peekOfCode": "class Hole(Entity):\n    CAPACITY = 1  # how many orbs can be contained by a single hole\n    DEFAULT_IMAGE = '...'\n    def __init__(self, id: int, position: Coordinates | None = None, imagePath: str|None = None) -> None:\n        '''Holes; Holes are empty places inside field which can be filled with orbs. \n            Param Notes: Not specifying coordinates will make it randomise its position, not specifying imagePath will make the app use default image.'''\n        super().__init__(name=\"Hole\", id=id, imagePath=imagePath or Hole.DEFAULT_IMAGE, entityType=EntityType.HOLE, position=position)\n        self.orbs: List[Entity] = []  # Demonestrates the orbs that are fropped inside this hole. If the list is empty it means its ready to contain upcomming orbs\n    def has_room(self) -> bool:\n        return len(self.orbs) < self.CAPACITY",
         "detail": "hole",
         "documentation": {}
     },
@@ -392,7 +523,7 @@
         "kind": 6,
         "importPath": "orb",
         "description": "orb",
-        "peekOfCode": "class Orb(Entity):\n    DEFAULT_IMAGE = '...'\n    def __init__(self, id: int, position: Coordinates | None = None, imagePath: str|None = None) -> None:\n        '''Orbs: orbs are sphere entities which would fill the holes inside the field.\n            Params note: Not specifying coordinates will make it randomise its position, not specifying imagePath will make the app use default image.'''\n        super().__init__(name=\"Orb\", id=id, imagePath=imagePath or Orb.DEFAULT_IMAGE, position=position)\n        self.hole: Hole|None = None  # The hole which this orb is dropped to. If orb.hole is None it means this orb is still outside in the field",
+        "peekOfCode": "class Orb(Entity):\n    DEFAULT_IMAGE = '...'\n    def __init__(self, id: int, position: Coordinates | None = None, imagePath: str|None = None) -> None:\n        '''Orbs: orbs are sphere entities which would fill the holes inside the field.\n            Params note: Not specifying coordinates will make it randomise its position, not specifying imagePath will make the app use default image.'''\n        super().__init__(name=\"Orb\", id=id, imagePath=imagePath or Orb.DEFAULT_IMAGE, entityType=EntityType.ORB, position=position)\n        self.hole: Hole|None = None  # The hole which this orb is dropped to. If orb.hole is None it means this orb is still outside in the field",
         "detail": "orb",
         "documentation": {}
     }
