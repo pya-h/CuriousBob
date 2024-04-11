@@ -1,6 +1,5 @@
 from coordinates import Coordinates
 from enum import Enum
-import math
 from typing import List
 
 class EntityType(Enum):
