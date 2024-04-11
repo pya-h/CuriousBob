@@ -20,7 +20,7 @@ class Game:
     def simulate(self):
         candidate: Candidate = None
         while True:
-            os.system("clear")
+            os.system("@cls||clear")
             self.field.show()
             if not self.field.get_remaining_orbs():
                 return True
