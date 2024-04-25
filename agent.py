@@ -28,13 +28,13 @@ class Direction(Enum):
     def __str__(self) -> str:
         match self:
             case Direction.UP:
-                return "Up"
+                return '\u2191'
             case Direction.RIGHT:
-                return "Right"
+                return '\u2192'
             case Direction.LEFT:
-                return "Left"
+                return '\u2190'
             case _:
-                return "Down"
+                return '\u2193'
 
 
 class Candidate:
@@ -54,7 +54,8 @@ class Candidate:
 
     def __str__(self) -> str:
         return f"Candidate: Orb@{self.orb.position} -> Hole@{self.hole.position}"    
-        
+
+   
 class Agent(Entity):
     DEFAULT_IMAGE = '...'
     def __init__(self, imagePath: str|None = None, position: Coordinates | None = None) -> None:
@@ -64,8 +65,7 @@ class Agent(Entity):
         self.actions = 0
         
     def __str__(self) -> str:
-        return f"{super().__str__()} with direction to {self.direction}"
-    
+        return f"A{self.direction}" if self.direction != Direction.LEFT else f"{self.direction}A"
         
     def extract_cooordinates(self) -> Union[int, int]:
         return self.position.x, self.position.y

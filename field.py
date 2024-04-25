@@ -6,7 +6,7 @@ from typing import Dict
 from entity import Entity, EntityType
 import math
 from random import randint
-from agent import Direction
+from agent import Direction, Agent
 
 class Field:
     def __init__(self, width: int = 5, height: int = 5) -> None:
@@ -75,7 +75,7 @@ class Field:
         out_orbs = list(filter(lambda o: not o.hole, self.orbs))
         return len(out_orbs)
         
-    def show(self):
+    def show(self, agent: Agent):
         print()
         cell_width, cell_height = 4, 3
         for h in range(self.height):
@@ -93,17 +93,18 @@ class Field:
                     if not entity or math.floor(cell_height / 2) != ch:
                         print(('  ' * cell_width) + '|', end='')
                     else:
-                        if entity.identified:
+                        en = agent.__str__() if agent.position == coords else ''
+                        if entity.identified or True: # FIXME: remove or true
                             if (isinstance(entity, Hole) and entity.orbs):
                                 x = entity.orbs[0]
-                                en = f" {x.shortname}{entity.shortname}"
+                                en += f" {x.shortname}{entity.shortname}"
                             elif (isinstance(entity, Orb) and entity.hole):
                                 x = entity.hole
-                                en = f" {x.shortname}{entity.shortname}"
+                                en += f" {x.shortname}{entity.shortname}"
                             else:
-                                en = f"   {entity.shortname}"
+                                en += f"   {entity.shortname}"
                         else:
-                            en = ' '
+                            en += ' '
                         print(f"{en:{cell_width*2}}" + '|', end='')
                             
                 print()

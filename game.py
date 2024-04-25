@@ -9,6 +9,7 @@ from orb import Orb
 
 class Game:
     MAX_MOVES = 30
+
     def __init__(self, fieldWidth: int = 5, fieldHegiht: int = 5, number_of_holes: int = 5, number_of_height: int = 5,) -> None:
         self.field = Field(fieldWidth, fieldHegiht)
         self.agent = Agent()
@@ -17,11 +18,22 @@ class Game:
         self.field.add_random_orbs(number_of_height)
         
 
+    def clear_scrren(self):
+        '''Clear console. Command may change in different OSes'''
+        os.system("@cls||clear")
+        
+    def wait(self, delay=1):
+        '''Delay between agent moves, by calling sleep. delay unit is seconds. If delay value is set None, moves will update with hitting Enter.'''
+        if not delay:
+            input()
+            return
+        time.sleep(delay)
+        
     def simulate(self):
         candidate: Candidate = None
         while True:
-            os.system("@cls||clear")
-            self.field.show()
+            self.clear_scrren()
+            self.field.show(self.agent)
             if not self.field.get_remaining_orbs():
                 return True
             if self.agent.moves >= self.MAX_MOVES:
@@ -58,10 +70,13 @@ class Game:
                 try:
                     candidate.drop()
                     self.field.shake()
+                    self.wait()
+                    self.field.show(self.agent)
+                    print("SHAKED")
                     candidate = None
                 except:
                     pass
-            time.sleep(1)
+            self.wait(None)
             
 if __name__ == '__main__':
     game = Game()
