@@ -1,4 +1,4 @@
-from field import Field
+from field.console import Field
 from agent import Agent, Candidate, Direction
 import os
 import time
@@ -16,7 +16,6 @@ class Game:
         # self.field.occupy_cell(self.agent)
         self.field.add_random_holes(number_of_holes)
         self.field.add_random_orbs(number_of_height)
-        
 
     def clear_scrren(self):
         '''Clear console. Command may change in different OSes'''

@@ -1,4 +1,5 @@
 from random import randint
+from typing import Union
 
 class Coordinates:
     
@@ -17,6 +18,9 @@ class Coordinates:
         if not isinstance(other, Coordinates):
             return False
         return self.x == other.x and self.y == other.y
+    
+    def convert_to_indices(self) -> Union[int, int]:
+        return self.x - 1, self.y - 1
     
     def val(self) -> str:
         return f"{self.x} {self.y}"

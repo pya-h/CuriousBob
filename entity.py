@@ -11,7 +11,7 @@ class EntityType(Enum):
 class Entity:
     ALL_ENTITIES = []
     
-    def __init__(self, id: int, name: str, imagePath: str, entityType: EntityType = EntityType.NONE, position: Coordinates|None = None) -> None:
+    def __init__(self, id: int, name: str, image: str, entityType: EntityType = EntityType.NONE, position: Coordinates|None = None) -> None:
         if position:
             self.position = position
         else:
@@ -25,7 +25,7 @@ class Entity:
         self.name = name
         self.alias: str = f"{self.name} #{self.id}"
         self.shortname: str = f"{''.join([word[0] for word in self.name.split()])}{self.id if self.id else ''}"
-        self.imagePath: str = imagePath  # TODO: Check if image existss
+        self.image: str = image  # TODO: Check if image existss
         self.identified: bool = False
         self.type = entityType
         Entity.ALL_ENTITIES.append(self)

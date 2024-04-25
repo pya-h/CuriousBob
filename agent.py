@@ -58,8 +58,8 @@ class Candidate:
    
 class Agent(Entity):
     DEFAULT_IMAGE = '...'
-    def __init__(self, imagePath: str|None = None, position: Coordinates | None = None) -> None:
-        super().__init__(id=0, name="Smart Agent", imagePath=imagePath or Agent.DEFAULT_IMAGE, entityType=EntityType.AGENT, position=position)
+    def __init__(self, image: str|None = None, position: Coordinates | None = None) -> None:
+        super().__init__(id=0, name="Smart Agent", image=image or Agent.DEFAULT_IMAGE, entityType=EntityType.AGENT, position=position)
         self.direction: Direction = Direction.Random()
         self.moves = 0
         self.actions = 0
@@ -80,19 +80,26 @@ class Agent(Entity):
             for j in steps:
                 if x + i >= 1 and y + j >= 1 and x + i <= field.width and y + j <= field.height:
                     cell = Coordinates(x + i, y + j)
-                    entity = field.cells[cell.val()]
-                    if entity and (isinstance(entity, Hole) or isinstance(entity, Orb)):
-                        # identified
-                        entity.identified = True
-                        new_founds += 1
-                        print(cell, entity.name)
+                    entities = field.get_cell(cell)
+                    for entity in entities:
+                        if entity and (isinstance(entity, Hole) or isinstance(entity, Orb)):
+                            # identified
+                            entity.identified = True
+                            new_founds += 1
+                            print(cell, entity.name)
                         
         return new_founds
     
     def find_next_best_displacement(self, field):
-        idents = list(map(
-            lambda coord: field.cells[coord] , filter(lambda key: field.cells[key] is not None and field.cells[key].identified, field.cells)
-        ))
+        idents = []
+
+        for row in field.cells:
+            for cell in row:
+                if cell:
+                    for item in cell:
+                        if item.identified:
+                            idents.append(item)
+                    
         orbs: List[Orb] = list(filter(lambda entity: isinstance(entity, Orb) and (entity.hole is None), idents))
         holes: List[Hole] = list(filter(lambda entity: isinstance(entity, Hole) and entity.has_room(), idents))
 

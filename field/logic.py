@@ -8,7 +8,7 @@ import math
 from random import randint
 from agent import Direction, Agent
 
-class Field:
+class FieldLogic:
     def __init__(self, width: int = 5, height: int = 5) -> None:
         if width < 2 or height < 2:
             raise ValueError("Field dimention cant be that small.")
@@ -16,33 +16,35 @@ class Field:
         self.width: int = width
         self.orbs: List[Orb] = []
         self.holes: List[Hole] = []
-        self.cells: Dict[str, Entity|None] = {}
-        self.extra: Dict[str, Entity|None] = {}
-        
+        self.cells: List[List[List[Entity]]] = []
         self.init_cells()
 
     def init_cells(self):
-        for i in range(1, self.width + 1):
-            for j in range(1, self.height + 1):
-                self.cells[Coordinates(i, j).val()] = None
-                self.extra[Coordinates(i, j).val()] = None
-                
+        self.cells = [[None for _ in range(self.width)] for _ in range(self.height)]
+
+        for i in range(self.width):
+            for j in range(self.height):
+                self.cells[i][j] = []
+
       
     def update_cells(self):
         self.init_cells()
         for h in self.holes:
-            self.cells[h.position.val()] = h
+            self.place_in_cell(h)
         for o in self.orbs:
-            self.cells[o.position.val()] = o
+            self.place_in_cell(o)
             
-    def place_in_cell(self, coords: Coordinates, entity: Entity|None):
-        self.cells[coords.val()] = entity
-
-    def occupy_cell(self, entity: Entity):
+    def place_in_cell(self, entity: Entity|None):
         if not entity:
             return
-        self.cells[entity.position.val()] = entity
-            
+        x, y = entity.position.convert_to_indices()
+        if entity not in self.cells[y][x]:
+            self.cells[y][x].append(entity)
+        
+    def get_cell(self, coord: Coordinates):
+        x, y = coord.convert_to_indices()
+        return self.cells[y][x]
+        
     def add_random_holes(self, number_of_holes: int):
         if number_of_holes <= 0:
             raise ValueError('Number of holes must be a positive number.')
@@ -50,13 +52,13 @@ class Field:
         for _ in range(1, number_of_holes + 1):
             hole = Hole(id=last_id)
             self.holes.append(hole)
-            self.occupy_cell(hole)
+            self.place_in_cell(hole)
             last_id += 1
-            
+        
     def add_hole(self, position: Coordinates):
         hole = Hole(id=Hole.GetNextId(self.holes), position=position)
         self.holes.append(hole)
-        self.occupy_cell(hole)
+        self.place_in_cell(hole)
 
     def add_random_orbs(self, number_of_orbs: int):
         if number_of_orbs <= 0:
@@ -65,7 +67,7 @@ class Field:
         for _ in range(1, number_of_orbs + 1):
             orb = Orb(id=last_id)
             self.orbs.append(orb)
-            self.occupy_cell(orb)
+            self.place_in_cell(orb)
             last_id += 1
             
     def add_orb(self, position: Coordinates):
@@ -76,47 +78,17 @@ class Field:
         return len(out_orbs)
         
     def show(self, agent: Agent):
-        print()
-        cell_width, cell_height = 4, 3
-        for h in range(self.height):
-            for ch in range(cell_height):
-                for w in range(self.width):
-                    if not w:
-                        print('|', end='')
-                        if not ch:
-                            for _ in range(self.width):
-                                print(('- ' * cell_width) + '|', end='')
-                            print()
-                            print('|', end='')
-                    coords = Coordinates(w + 1, h + 1)
-                    entity = self.cells[coords.val()]
-                    if not entity or math.floor(cell_height / 2) != ch:
-                        print(('  ' * cell_width) + '|', end='')
-                    else:
-                        en = agent.__str__() if agent.position == coords else ''
-                        if entity.identified or True: # FIXME: remove or true
-                            if (isinstance(entity, Hole) and entity.orbs):
-                                x = entity.orbs[0]
-                                en += f" {x.shortname}{entity.shortname}"
-                            elif (isinstance(entity, Orb) and entity.hole):
-                                x = entity.hole
-                                en += f" {x.shortname}{entity.shortname}"
-                            else:
-                                en += f"   {entity.shortname}"
-                        else:
-                            en += ' '
-                        print(f"{en:{cell_width*2}}" + '|', end='')
-                            
-                print()
-        print('|', end='')
-        for _ in range(self.width):
-            print((' -' * cell_width) +  '|', end='')
-        print()
+        pass
         
     def shake(self):
-        orbs = list(map(
-            lambda coord: self.cells[coord] , filter(lambda key: self.cells[key] and isinstance(self.cells[key], Orb) and self.cells[key].hole is None, self.cells)
-        ))
+        orbs = []
+        for row in self.cells:
+            for cell in row:
+                if cell:
+                    for item in cell:
+                        if isinstance(item, Orb) and item.hole is None:
+                            orbs.append(item)
+                            
         for orb in orbs:
             rnd = randint(0, 100)
             if rnd < 10:
