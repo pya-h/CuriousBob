@@ -27,13 +27,14 @@ class FieldLogic:
                 self.cells[i][j] = []
 
       
-    def update_cells(self):
+    def update_cells(self, agent: Agent):
         self.init_cells()
         for h in self.holes:
             self.place_in_cell(h)
         for o in self.orbs:
             self.place_in_cell(o)
-            
+        self.place_in_cell(agent)  
+
     def place_in_cell(self, entity: Entity|None):
         if not entity:
             return

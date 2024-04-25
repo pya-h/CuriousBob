@@ -143,7 +143,7 @@ class Agent(Entity):
         if candidate:
             candidate.orb.position.x = self.position.x
             candidate.orb.position.y = self.position.y
-            field.update_cells()
+            field.update_cells(self)
         self.moves += 1
         field.shake()
         
