@@ -1,5 +1,5 @@
 from field.logic import FieldLogic
-from coordinates import Coordinates
+from movement import Coordinates
 import math
 from hole import Hole
 from orb import Orb
@@ -8,7 +8,12 @@ from agent import Agent
 
 class Field(FieldLogic):
     '''Field illustration in a console app.'''  
-    def show(self, agent: Agent):
+    def run(self):
+        print("Welcome! Press enter to start...")
+        input()
+        return self
+    
+    def update_ui(self, agent: Agent):
         print()
         cell_width, cell_height = 4, 3
         for h in range(self.height):

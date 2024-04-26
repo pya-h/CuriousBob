@@ -1,7 +1,7 @@
 from typing import List
 from orb import Orb
 from hole import Hole
-from coordinates import Coordinates
+from movement import Coordinates
 from typing import Dict
 from entity import Entity, EntityType
 import math
@@ -78,7 +78,7 @@ class FieldLogic:
         out_orbs = list(filter(lambda o: not o.hole, self.orbs))
         return len(out_orbs)
         
-    def show(self, agent: Agent):
+    def update_ui(self, agent: Agent):
         pass
         
     def shake(self):

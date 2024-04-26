@@ -1,5 +1,7 @@
 from random import randint
 from typing import Union
+from enum import Enum
+
 
 class Coordinates:
     
@@ -33,3 +35,33 @@ class Coordinates:
             raise ValueError("Other operand coordinates too.")
         abs = lambda v: v if v >= 0 else -v
         return abs(self.x - other.x) + abs(self.y - other.y)
+
+
+class Direction(Enum):
+    DOWN = 0
+    UP = 2
+    RIGHT = 3
+    LEFT = 1
+    
+    @staticmethod
+    def From(d: int):
+        if d < Direction.DOWN.value or d > Direction.RIGHT.value:
+            raise ValueError('Unknown direction provided.')
+        for v in (Direction.DOWN, Direction.LEFT, Direction.UP, Direction.RIGHT):
+            if v.value == d:
+                return v
+            
+    @staticmethod
+    def Random():
+        return Direction.From(randint(Direction.DOWN.value, Direction.RIGHT.value))
+    
+    def __str__(self) -> str:
+        match self:
+            case Direction.UP:
+                return '\u2191'
+            case Direction.RIGHT:
+                return '\u2192'
+            case Direction.LEFT:
+                return '\u2190'
+            case _:
+                return '\u2193'

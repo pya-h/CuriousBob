@@ -1,6 +1,8 @@
-from coordinates import Coordinates
+from movement import Coordinates, Direction
 from enum import Enum
-from typing import List
+from typing import List, Dict
+from resources.avatar import Avatar
+
 
 class EntityType(Enum):
     NONE = 0
@@ -11,7 +13,7 @@ class EntityType(Enum):
 class Entity:
     ALL_ENTITIES = []
     
-    def __init__(self, id: int, name: str, image: str, entityType: EntityType = EntityType.NONE, position: Coordinates|None = None) -> None:
+    def __init__(self, id: int, name: str, avatar: Avatar|List[Avatar], entityType: EntityType = EntityType.NONE, position: Coordinates|None = None) -> None:
         if position:
             self.position = position
         else:
@@ -25,12 +27,18 @@ class Entity:
         self.name = name
         self.alias: str = f"{self.name} #{self.id}"
         self.shortname: str = f"{''.join([word[0] for word in self.name.split()])}{self.id if self.id else ''}"
-        self.image: str = image  # TODO: Check if image existss
+        self.__avatars: Dict[int|Direction, Avatar] = {0: avatar} if not isinstance(avatar, dict) else avatar  # TODO: Check if image existss
         self.identified: bool = False
         self.type = entityType
         Entity.ALL_ENTITIES.append(self)
         
     
+    @property
+    def avatar(self):
+        '''returns the avatar assigned to an entity'''
+        return self.__avatars[0]
+    
+
     def overlaps_on_others(self):
         '''Find out if this entity falls upon the exact same position as a previously defined entity'''
         for I in Entity.ALL_ENTITIES:
@@ -55,3 +63,8 @@ class Entity:
         if not isinstance(other, Entity):
             raise ValueError("Other operand must an Entity.")
         return self.position - other.position
+    
+    def clear_canvas(self, canvas):
+        for key in self.__avatars:
+            if self.__avatars[key] and self.__avatars[key].canvas_id:
+                canvas.delete(self.__avatars[key].canvas_id)

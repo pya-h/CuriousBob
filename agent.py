@@ -1,40 +1,12 @@
-from coordinates import Coordinates
+from movement import Coordinates, Direction
 from enum import Enum
 from random import randint
 from entity import Entity, EntityType
-from typing import Union, List
+from typing import Union, List, Dict
 from hole import Hole
 from orb import Orb
+from resources.avatar import Avatar
 
-
-class Direction(Enum):
-    DOWN = 0
-    UP = 2
-    RIGHT = 3
-    LEFT = 1
-    
-    @staticmethod
-    def From(d: int):
-        if d < Direction.DOWN.value or d > Direction.RIGHT.value:
-            raise ValueError('Unknown direction provided.')
-        for v in (Direction.DOWN, Direction.LEFT, Direction.UP, Direction.RIGHT):
-            if v.value == d:
-                return v
-            
-    @staticmethod
-    def Random():
-        return Direction.From(randint(Direction.DOWN.value, Direction.RIGHT.value))
-    
-    def __str__(self) -> str:
-        match self:
-            case Direction.UP:
-                return '\u2191'
-            case Direction.RIGHT:
-                return '\u2192'
-            case Direction.LEFT:
-                return '\u2190'
-            case _:
-                return '\u2193'
 
 
 class Candidate:
@@ -57,13 +29,28 @@ class Candidate:
 
    
 class Agent(Entity):
-    DEFAULT_IMAGE = '...'
-    def __init__(self, image: str|None = None, position: Coordinates | None = None) -> None:
-        super().__init__(id=0, name="Smart Agent", image=image or Agent.DEFAULT_IMAGE, entityType=EntityType.AGENT, position=position)
+
+    @staticmethod
+    def DefaultAvatar() -> Dict[Direction, Avatar]:
+        return { 
+            Direction.UP: Avatar('resources/agent/up.png', 60),
+            Direction.DOWN: Avatar('resources/agent/down.png', 60),
+            Direction.RIGHT: Avatar('resources/agent/right.png', 60),
+            Direction.LEFT: Avatar('resources/agent/left.png', 60),       
+        }
+
+    def __init__(self, position: Coordinates | None = None, avatars: Dict[Direction, Avatar] = None) -> None:
+        super().__init__(id=0, name="Smart Agent", avatar=avatars, entityType=EntityType.AGENT, position=position)
         self.direction: Direction = Direction.Random()
         self.moves = 0
         self.actions = 0
+        self.__avatars = avatars if avatars else Agent.DefaultAvatar()
         
+    @property
+    def avatar(self):
+        '''return the avatar of the agent base of the direction'''
+        return self.__avatars[self.direction]
+
     def __str__(self) -> str:
         return f"A{self.direction}" if self.direction != Direction.LEFT else f"{self.direction}A"
         
