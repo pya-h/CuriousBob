@@ -33,7 +33,7 @@ class FieldLogic:
             self.place_in_cell(h)
         for o in self.orbs:
             self.place_in_cell(o)
-        self.place_in_cell(agent)  
+        # self.place_in_cell(agent)  
 
     def place_in_cell(self, entity: Entity|None):
         if not entity:

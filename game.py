@@ -1,10 +1,7 @@
 from field.gui import Field
-from agent import Agent, Candidate, Direction
+from agent import Agent
 import os
 import time
-from entity import Entity, EntityType
-from hole import Hole
-from orb import Orb
 
 
 class Game:
@@ -35,7 +32,7 @@ class Game:
             return True
         if self.agent.moves >= self.MAX_MOVES:
             return False
-        print("SA@", self.agent.position, " -> ", self.agent.direction)
+        print("A@", self.agent.position, " -> ", self.agent.direction)
         self.agent.look_around(self.field)
         has_reached = False
         if not self.candidate:

@@ -31,13 +31,11 @@ class Entity:
         self.identified: bool = False
         self.type = entityType
         Entity.ALL_ENTITIES.append(self)
-        
-    
+           
     @property
     def avatar(self):
         '''returns the avatar assigned to an entity'''
-        return self.__avatars[0]
-    
+        return self.__avatars[0]  
 
     def overlaps_on_others(self):
         '''Find out if this entity falls upon the exact same position as a previously defined entity'''
@@ -51,7 +49,7 @@ class Entity:
     def GetNextId(entity_list: List[any]) -> int|None:
         '''Get next available id for each type of entity.'''
         try:
-            return max(entity_list, key=lambda e: e.id).id + 1 if entity_list else 1
+            return max(entity_list, key=lambda e: e.id).id + 1 if entity_list else 1   
         except:
             pass
         return None
