@@ -136,19 +136,30 @@ class Agent(Entity):
         
     def move_forward_to(self, target: Entity):
         if self.position.x < target.position.x:
+            self.direction = Direction.RIGHT
             self.position.x += 1
             self.moves += 1
-        elif self.position.x > target.position.x:
+            return self.position == target.position
+        
+        if self.position.x > target.position.x:
+            self.direction = Direction.LEFT
             self.position.x -= 1
             self.moves += 1
-            
+            return self.position == target.position
+        
         if self.position.y < target.position.y:
+            self.direction = Direction.DOWN
             self.position.y += 1
             self.moves += 1
-        elif self.position.y > target.position.y:
+            return self.position == target.position
+
+        if self.position.y > target.position.y:
+            self.direction = Direction.UP
             self.position.y -= 1
             self.moves += 1
-            
+            return self.position == target.position
+        return self.position == target.position
+    
     def check_agent_position(self, field):
         '''Prevent egant from going out of the field'''
         while not self.direction \

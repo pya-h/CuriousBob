@@ -13,6 +13,7 @@ class Game:
         self.field.add_random_holes(number_of_holes)
         self.field.add_random_orbs(number_of_height)
         self.candidate = None
+        self.reach_to_candidate = None
         # self.field.place_in_cell(self.agent) # TODO: Add agent to the cells list so that we dont need to pass agent as param everytime to show func
         # for now cause it can cause bugs in finding candidate, its passed as parameter
 
@@ -34,30 +35,34 @@ class Game:
             return False
         print("A@", self.agent.position, " -> ", self.agent.direction)
         self.agent.look_around(self.field)
-        has_reached = False
+        candidate_transfer_fulfilled = False
         if not self.candidate:
-            self.candidate = self.agent.find_next_best_displacement(self.field)
-            if self.candidate:
+            if not self.reach_to_candidate:
+                self.reach_to_candidate = self.agent.find_next_best_displacement(self.field)
+            if self.reach_to_candidate:
                 '''set the agent the same position as orb to start holding ti'''
-                self.agent.move_forward_to(self.candidate.orb)
-            
+                reached = self.agent.move_forward_to(self.reach_to_candidate.orb)
+                if reached:
+                    self.candidate = self.reach_to_candidate
+                    self.reach_to_candidate = None
+                return False
         else:
             # if there is self.candidate from before
-            has_reached = self.agent.direct_into(self.candidate)
+            candidate_transfer_fulfilled = self.agent.direct_into(self.candidate)
         print("Current self.candidate: ", self.candidate)
-        if not has_reached:
+        if not candidate_transfer_fulfilled:
             self.agent.move(self.field, self.candidate) # move one step closer to near hole
             # entity: Entity = self.field.cells[self.agent.position.val()]
             # if entity:
             #     if self.candidate:
             #         if entity.type == EntityType.HOLE and isinstance(entity, Hole) and entity.has_room():
             #             self.candidate.hole = entity
-            #             has_reached = self.candidate.hole.has_room() and not self.candidate.orb.hole
+            #             candidate_transfer_fulfilled = self.candidate.hole.has_room() and not self.candidate.orb.hole
             #         elif entity.type == EntityType.ORB and isinstance(entity, Orb) and not entity.hole:
             #             self.candidate.orb = entity
-            #             has_reached = self.candidate.hole.has_room() and not self.candidate.orb.hole
+            #             candidate_transfer_fulfilled = self.candidate.hole.has_room() and not self.candidate.orb.hole
                         
-            #         if has_reached:
+            #         if candidate_transfer_fulfilled:
             #             self.candidate.drop()
             #             self.candidate = None
         else:

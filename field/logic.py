@@ -80,9 +80,19 @@ class FieldLogic:
         
     def update_ui(self, agent: Agent):
         pass
-        
+     
+    def cell_has_orb(self, position: Coordinates):
+        x, y = position.convert_to_indices()
+        cell = self.cells[y][x]
+        for item in cell:
+            if isinstance(item, Orb):
+                return True
+            elif isinstance(item, Hole) and item.orbs:
+                return True
+        return False
+    
     def shake(self):
-        orbs = []
+        orbs: List[Orb] = []
         for row in self.cells:
             for cell in row:
                 if cell:
@@ -94,26 +104,35 @@ class FieldLogic:
             rnd = randint(0, 100)
             if rnd < 10:
                 # 10% of moving the orb
-                rnd_direction = Direction.Random()
-                match rnd_direction:
-                    case Direction.RIGHT:
-                        if orb.position.x < self.width:
-                            orb.position.x += 1
-                        else:
-                            orb.position.x -= 1
-                    case Direction.LEFT:
-                        if orb.position.x > 1:
-                            orb.position.x -= 1
-                        else:
-                            orb.position.x += 1
-                    case Direction.UP:
-                        if orb.position.y > 1:
-                            orb.position.y -= 1
-                        else:
-                            orb.position.y += 1
-                    case Direction.DOWN:
-                        if orb.position.y < self.height:
-                            orb.position.y += 1
-                        else:
-                            orb.position.y -= 1
-                orb.identified = False
+                for _ in range(4): # try 4 times to shake the orb
+                    # because the taget cell may be full. if after 4 times it didnt success go to next orb
+                    rnd_direction = Direction.Random()
+                    new_position = Coordinates(orb.position.x, orb.position.y)
+                    
+                    match rnd_direction:
+                        case Direction.RIGHT:
+                            if new_position.x < self.width:
+                                new_position.x += 1
+                            else:
+                                new_position.x -= 1
+                        case Direction.LEFT:
+                            if new_position.x > 1:
+                                new_position.x -= 1
+                            else:
+                                new_position.x += 1
+                        case Direction.UP:
+                            if new_position.y > 1:
+                                new_position.y -= 1
+                            else:
+                                new_position.y += 1
+                        case Direction.DOWN:
+                            if new_position.y < self.height:
+                                new_position.y += 1
+                            else:
+                                new_position.y -= 1
+                                
+                    if not self.cell_has_orb(new_position):
+                        orb.position = new_position
+                        orb.identified = False
+                        break
+                        
