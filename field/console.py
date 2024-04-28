@@ -4,16 +4,21 @@ import math
 from hole import Hole
 from orb import Orb
 from agent import Agent
+from field.logic import FieldType
+from typing import List
 
 
 class Field(FieldLogic):
     '''Field illustration in a console app.'''  
-    def run(self):
+    def run(self, game):
         print("Welcome! Press enter to start...")
         input()
         return self
     
-    def update_ui(self, agent: Agent):
+    def type(self) -> FieldType:
+        return FieldType.CONSOLE
+    
+    def update_ui(self, agents: List[Agent]):
         print()
         cell_width, cell_height = 4, 3
         for h in range(self.height):
@@ -32,8 +37,10 @@ class Field(FieldLogic):
                     if not entity or math.floor(cell_height / 2) != ch:
                         print(('  ' * cell_width) + '|', end='')
                     else:
-                        en = agent.__str__() if agent.position == coords else ''
-                        if entity.identified or True: # FIXME: remove or true
+                        for agent in agents:
+                            en = agent.__str__() if agent.position == coords else ''
+                                
+                        if entity.identified > 0:
                             if (isinstance(entity, Hole) and entity.orbs):
                                 x = entity.orbs[0]
                                 en += f" {x.shortname}{entity.shortname}"

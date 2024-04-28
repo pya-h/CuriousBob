@@ -14,7 +14,7 @@ class Hole(Entity):
             Param Notes: Not specifying coordinates will make it randomise its position, not specifying image will make the app use default image.'''
         avatar = avatar if avatar else Hole.DefaultAvatar()
         super().__init__(name="Hole", id=id, avatar=avatar, entityType=EntityType.HOLE, position=position)
-        
+        self.targeted: int = 0
         self.orbs: List[Entity] = []  # Demonestrates the orbs that are fropped inside this hole. If the list is empty it means its ready to contain upcomming orbs
         
     def has_room(self) -> bool:

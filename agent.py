@@ -26,10 +26,12 @@ class Candidate:
 
     def __str__(self) -> str:
         return f"Candidate: Orb@{self.orb.position} -> Hole@{self.hole.position}"    
-
+    
+    def fulfilled(self):
+        return self.orb and self.hole and self.orb.position == self.hole.position
    
 class Agent(Entity):
-
+    NumberOfAgents = 0
     @staticmethod
     def DefaultAvatar() -> Dict[Direction, Avatar]:
         return { 
@@ -40,11 +42,14 @@ class Agent(Entity):
         }
 
     def __init__(self, position: Coordinates | None = None, avatars: Dict[Direction, Avatar] = None) -> None:
-        super().__init__(id=0, name="Smart Agent", avatar=avatars, entityType=EntityType.AGENT, position=position)
+        Agent.NumberOfAgents += 1
+        super().__init__(id=Agent.NumberOfAgents, name="Smart Agent", avatar=avatars, entityType=EntityType.AGENT, position=position)
         self.direction: Direction = Direction.Random()
         self.moves = 0
         self.actions = 0
         self.__avatars = avatars if avatars else Agent.DefaultAvatar()
+        self.reach_to_candidate: Candidate = None
+        self.candidate: Candidate = None
         
     @property
     def avatar(self):
@@ -52,7 +57,7 @@ class Agent(Entity):
         return self.__avatars[self.direction]
 
     def __str__(self) -> str:
-        return f"A{self.direction}" if self.direction != Direction.LEFT else f"{self.direction}A"
+        return f"A{self.id}{self.direction}" if self.direction != Direction.LEFT else f"{self.direction}A{self.id}"
         
     def extract_cooordinates(self) -> Union[int, int]:
         return self.position.x, self.position.y
@@ -71,24 +76,26 @@ class Agent(Entity):
                     for entity in entities:
                         if entity and (isinstance(entity, Hole) or isinstance(entity, Orb)):
                             # identified
-                            entity.identified = True
+                            entity.identified = self.id
                             new_founds += 1
                             print(cell, entity.name)
                         
         return new_founds
     
     def find_next_best_displacement(self, field):
-        idents = []
+        orbs: List[Orb] = []
+        holes: List[Hole] = []
 
         for row in field.cells:
             for cell in row:
                 if cell:
                     for item in cell:
                         if item.identified:
-                            idents.append(item)
+                            if isinstance(item, Orb) and not item.hole and not item.targeted:
+                                orbs.append(item)
+                            elif isinstance(item, Hole) and not item.orbs and not item.targeted:
+                                holes.append(item)
                     
-        orbs: List[Orb] = list(filter(lambda entity: isinstance(entity, Orb) and (entity.hole is None), idents))
-        holes: List[Hole] = list(filter(lambda entity: isinstance(entity, Hole) and entity.has_room(), idents))
 
         if not holes or not orbs:
             return None
@@ -97,7 +104,7 @@ class Agent(Entity):
             for hole in holes:
                 if (hole.has_room()) and (not orb.hole) and (candidate.distance > orb - hole):
                     candidate = Candidate(orb, hole)
-         
+                    orb.targeted = hole.targeted = self.id
         return candidate
     
     def direct_into(self, target: Candidate):
@@ -132,7 +139,6 @@ class Agent(Entity):
             candidate.orb.position.y = self.position.y
             field.update_cells(self)
         self.moves += 1
-        field.shake()
         
     def move_forward_to(self, target: Entity):
         if self.position.x < target.position.x:

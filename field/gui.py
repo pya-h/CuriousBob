@@ -5,9 +5,8 @@ from field.logic import FieldLogic
 from agent import Agent
 from typing import List
 from entity import Entity
-from resources.avatar import Avatar
-from threading import Timer
-
+from field.logic import FieldType
+from tkinter import messagebox
 
 class FieldGUI(tk.Tk):
     def __init__(self, width: int = 5, height: int = 5):
@@ -46,7 +45,7 @@ class FieldGUI(tk.Tk):
 
         return canvas_id
 
-    def update_ui(self, cells_data: List[List[List[Entity]]],  agent: Agent):
+    def update_ui(self, cells_data: List[List[List[Entity]]],  agents: List[Agent]):
         '''Show the graphical user interface for illustration of the simulation; TODO: agent field is temprory'''
         for row in cells_data:
             for cell in row:
@@ -56,7 +55,8 @@ class FieldGUI(tk.Tk):
                     if not entity:
                         continue
                     entity.avatar.canvas_id = self.load_entity(entity)
-        agent.avatar.canvas_id = self.load_entity(agent)
+        for agent in agents:
+            agent.avatar.canvas_id = self.load_entity(agent)
         
 
 class Field(FieldLogic):
@@ -72,14 +72,16 @@ class Field(FieldLogic):
                     self.gui.canvas.delete(item['id'])
                 col.clear()
 
-    def update_ui(self, agent: Agent):
+    def update_ui(self, agents: List[Agent]):
         self.clear_field()
-        self.gui.update_ui(self.cells, agent)
+        self.gui.update_ui(self.cells, agents)
         
     def go_for_next_move(self, game):
-        self.update_ui(game.agent)
-        game.do_next_move()
-
+        self.update_ui(game.agents)
+        game_ended = game.do_next_move()
+        if game_ended:
+            messagebox.showinfo("Game Over", "All orbs are placed in holes." if game.agents_has_won() else "Agents are out of moves.")
+            
     def run(self, game):
         self.check_for_events(game)
         self.gui.mainloop()
@@ -90,6 +92,9 @@ class Field(FieldLogic):
         self.go_for_next_move(game)
         self.gui.after(1000, self.check_for_events, game)  # Check again after 100ms
 
+    def type(self) -> FieldType:
+        return FieldType.GUI
+    
 if __name__ == "__main__":
     size = 5  # Change the size of the board here
     app = FieldGUI()

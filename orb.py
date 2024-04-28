@@ -14,5 +14,6 @@ class Orb(Entity):
             Params note: Not specifying coordinates will make it randomise its position, not specifying image will make the app use default image.'''
         avatar = avatar if avatar else Orb.DefaultAvatar()
         super().__init__(name="Orb", id=id, avatar=avatar, entityType=EntityType.ORB, position=position)
+        self.targeted: int = 0
         
         self.hole: Hole|None = None  # The hole which this orb is dropped to. If orb.hole is None it means this orb is still outside in the field

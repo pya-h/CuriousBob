@@ -2,14 +2,17 @@ from typing import List
 from orb import Orb
 from hole import Hole
 from movement import Coordinates
-from typing import Dict
-from entity import Entity, EntityType
-import math
+from entity import Entity
 from random import randint
 from agent import Direction, Agent
+from enum import Enum
+
+class FieldType(Enum):
+    CONSOLE = 1
+    GUI = 2
 
 class FieldLogic:
-    def __init__(self, width: int = 5, height: int = 5) -> None:
+    def __init__(self, width: int = 7, height: int = 7) -> None:
         if width < 2 or height < 2:
             raise ValueError("Field dimention cant be that small.")
         self.height: int = height
@@ -133,6 +136,6 @@ class FieldLogic:
                                 
                     if not self.cell_has_orb(new_position):
                         orb.position = new_position
-                        orb.identified = False
+                        orb.identified = 0
                         break
                         
