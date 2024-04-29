@@ -5,6 +5,7 @@ import time
 from field.logic import FieldType
 from typing import List
 from hole import Hole
+from movement import Direction
 
 
 class Game:
@@ -15,7 +16,8 @@ class Game:
         self.agents: List[Agent] = [Agent(), Agent()]
         self.field.add_random_holes(number_of_holes)
         self.field.add_random_orbs(number_of_height)
-
+        self.no_move_rep = 0
+        
     def clear_scrren(self):
         '''Clear console. Command may change in different OSes'''
         os.system("clear")
@@ -33,7 +35,7 @@ class Game:
     def do_next_move(self) -> bool:
         if not self.field.get_remaining_orbs():
             return True
-        for i, agent in enumerate(self.agents):
+        for _, agent in enumerate(self.agents):
 
             if agent.moves >= self.MAX_MOVES:
                 continue
@@ -46,18 +48,33 @@ class Game:
                     agent.reach_to_candidate = agent.find_next_best_displacement(self.field)
                 if agent.reach_to_candidate:
                     '''set the agent the same position as orb to start holding ti'''
-                    reached = agent.move_forward_to(agent.reach_to_candidate.orb)
-                    if reached:
+                    reached = agent.move_forward_to(agent.reach_to_candidate.orb, self.agents)
+                    if reached == 1:
                         agent.candidate = agent.reach_to_candidate
                         agent.reach_to_candidate = None
+                        self.no_move_rep = 0
+                    elif reached == -1:
+                        self.no_move_rep += 1
+                    else:
+                        self.no_move_rep = 0
+                    if self.no_move_rep >= 3:
+                        agent.force_move(self.field, self.agents)
+                        self.no_move_rep = 0
                     continue
             else:
                 # if there is agent.candidate from before
                 candidate_transfer_fulfilled = agent.direct_into(agent.candidate)
             print("Current agent.candidate: ", agent.candidate)
             if not candidate_transfer_fulfilled:
-                agent.move(self.field, agent.candidate) # move one step closer to near hole
-                
+                r = agent.move(self.field, agent.candidate, self.agents) # move one step closer to near hole
+                if r == -1:
+                    self.no_move_rep += 1
+                else:
+                    self.no_move_rep = 0
+                    
+                if self.no_move_rep >= 3:
+                    agent.force_move(self.field, self.agents)
+                    self.no_move_rep = 0
                 # if not agent.candidate:
                 #     most = int(0.8 * self.field.width)
                 #     mid = int(0.5 * self.field.width)

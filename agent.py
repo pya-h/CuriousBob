@@ -123,7 +123,8 @@ class Agent(Entity):
 
         return False
          
-    def move(self, field, candidate: Candidate|None):
+    def move(self, field, candidate: Candidate|None, agents: List[Entity]) -> None|int:
+        prev_pos = Coordinates(self.position.x, self.position.y)
         self.check_agent_position(field)
         match self.direction:
             case Direction.RIGHT:
@@ -138,33 +139,59 @@ class Agent(Entity):
             candidate.orb.position.x = self.position.x
             candidate.orb.position.y = self.position.y
             field.update_cells(self)
-        self.moves += 1
         
-    def move_forward_to(self, target: Entity):
+        other = agents[0] if agents[0] != self else agents[-1]
+
+        if other.position == self.position:
+            self.position = prev_pos
+            return -1
+        self.moves += 1
+        return None
+    
+    def move_forward_to(self, target: Entity, agents: List[Entity]):
+        prev_pos = Coordinates(self.position.x, self.position.y)
+        other = agents[0] if agents[0] != self else agents[-1]
+        
         if self.position.x < target.position.x:
             self.direction = Direction.RIGHT
             self.position.x += 1
-            self.moves += 1
-            return self.position == target.position
+            if other.position == self.position:
+                self.position = prev_pos
+                return -1
+            else:
+                self.moves += 1
+            return int(self.position == target.position)
         
         if self.position.x > target.position.x:
             self.direction = Direction.LEFT
             self.position.x -= 1
-            self.moves += 1
-            return self.position == target.position
+            if other.position == self.position:
+                self.position = prev_pos
+                return -1
+            else:
+                self.moves += 1
+            return int(self.position == target.position)
         
         if self.position.y < target.position.y:
             self.direction = Direction.DOWN
             self.position.y += 1
-            self.moves += 1
-            return self.position == target.position
+            if other.position == self.position:
+                self.position = prev_pos
+                return -1
+            else:
+                self.moves += 1
+            return int(self.position == target.position)
 
         if self.position.y > target.position.y:
             self.direction = Direction.UP
             self.position.y -= 1
-            self.moves += 1
-            return self.position == target.position
-        return self.position == target.position
+            if other.position == self.position:
+                self.position = prev_pos
+                return -1
+            else:
+                self.moves += 1
+            return int(self.position == target.position)
+        return -1
     
     def check_agent_position(self, field):
         '''Prevent egant from going out of the field'''
@@ -174,3 +201,9 @@ class Agent(Entity):
             or (self.direction == Direction.UP and self.position.y == 1) \
             or (self.direction == Direction.DOWN and self.position.y == field.height):
                 self.direction = Direction.Random()
+                
+    def force_move(self, field: any, all_agents: List[Entity]):
+        '''This is for when both agents are stock next to each other and cant move'''
+        self.direction = Direction.Random()
+        while self.move(field, self.candidate, all_agents) == -1:
+            self.direction = Direction.Random()

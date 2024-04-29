@@ -40,7 +40,8 @@ class Field(FieldLogic):
                         for agent in agents:
                             en = agent.__str__() if agent.position == coords else ''
                                 
-                        if entity.identified > 0:
+                        if True:
+                        # if entity.identified > 0:
                             if (isinstance(entity, Hole) and entity.orbs):
                                 x = entity.orbs[0]
                                 en += f" {x.shortname}{entity.shortname}"

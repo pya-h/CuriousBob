@@ -64,7 +64,8 @@ class Field(FieldLogic):
     def __init__(self, width: int = 5, height: int = 5) -> None:
         super().__init__(width, height)
         self.gui = FieldGUI(self.width, self.height)
-
+        self.game_ended = False
+        
     def clear_field(self):
         for row in self.gui.images:
             for col in row:
@@ -77,9 +78,11 @@ class Field(FieldLogic):
         self.gui.update_ui(self.cells, agents)
         
     def go_for_next_move(self, game):
+        if self.game_ended:
+            return
         self.update_ui(game.agents)
-        game_ended = game.do_next_move()
-        if game_ended:
+        self.game_ended = game.do_next_move()
+        if self.game_ended:
             messagebox.showinfo("Game Over", "All orbs are placed in holes." if game.agents_has_won() else "Agents are out of moves.")
             
     def run(self, game):
