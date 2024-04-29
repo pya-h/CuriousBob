@@ -154,8 +154,8 @@ class Agent(Entity):
     def move(self, field, candidate: Candidate|None, agents: List[Entity]) -> None|int:
         prev_pos = Coordinates(self.position.x, self.position.y)
         prev_dir = self.direction
-        if not self.check_one_directional_moves(prev_dir, field.width, field.height):
-            self.check_agent_position(field)
+        self.check_one_directional_moves(prev_dir, field.width, field.height)
+        self.check_agent_position(field)
         match self.direction:
             case Direction.RIGHT:
                 self.position.x += 1
