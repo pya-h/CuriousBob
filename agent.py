@@ -50,7 +50,9 @@ class Agent(Entity):
         self.__avatars = avatars if avatars else Agent.DefaultAvatar()
         self.reach_to_candidate: Candidate = None
         self.candidate: Candidate = None
-        
+        self.no_point_moving_orb = None  # for when there's no candidate, this could be useful by moving orb, so it isnt required to move back to it just for moving it again.
+        self.one_directional_moves = 0
+
     @property
     def avatar(self):
         '''return the avatar of the agent base of the direction'''
@@ -122,10 +124,38 @@ class Agent(Entity):
             return True
 
         return False
-         
+    def check_one_directional_moves(self, previous_direction: Direction, x_max: int, y_max: int) -> bool:
+        
+        '''This is for getting the agen out of one directional move loop; if its taking so long moving in one didrection, this method chanes it for the better'''
+        if not self.candidate and previous_direction == self.direction:
+            self.one_directional_moves += 1
+            # this means random movement has been taking to long in the same direciotn
+            if self.direction.is_horizontal() and self.one_directional_moves >= int(x_max / 2):
+                if self.position.y <= 0.3 * y_max:
+                    self.direction = Direction.DOWN
+                elif self.position.y >= 0.8 * y_max:
+                    self.direction = Direction.UP
+                elif self.one_directional_moves >= 2 + int(x_max / 2):
+                    # if the agent is in the middle of the field, it needs a larger threshold
+                    self.direction = Direction.Random(axis='v')
+            elif self.direction.is_vertical() and self.one_directional_moves >= int(y_max / 2):
+                if self.position.x <= 0.3 * x_max:
+                    self.direction = Direction.RIGHT
+                elif self.position.x >= 0.8 * x_max:
+                    self.direction = Direction.LEFT
+                elif self.one_directional_moves >= 2 + int(y_max / 2):
+                    # if the agent is in the middle of the field, it needs a larger threshold
+                    self.direction = Direction.Random(axis='h')
+            return True
+        
+        self.one_directional_moves = 0
+        return False
+    
     def move(self, field, candidate: Candidate|None, agents: List[Entity]) -> None|int:
         prev_pos = Coordinates(self.position.x, self.position.y)
-        self.check_agent_position(field)
+        prev_dir = self.direction
+        if not self.check_one_directional_moves(prev_dir, field.width, field.height)
+            self.check_agent_position(field)
         match self.direction:
             case Direction.RIGHT:
                 self.position.x += 1
@@ -139,7 +169,7 @@ class Agent(Entity):
             candidate.orb.position.x = self.position.x
             candidate.orb.position.y = self.position.y
             field.update_cells(self)
-        
+
         other = agents[0] if agents[0] != self else agents[-1]
 
         if other.position == self.position:
@@ -151,7 +181,7 @@ class Agent(Entity):
     def move_forward_to(self, target: Entity, agents: List[Entity]):
         prev_pos = Coordinates(self.position.x, self.position.y)
         other = agents[0] if agents[0] != self else agents[-1]
-        
+
         if self.position.x < target.position.x:
             self.direction = Direction.RIGHT
             self.position.x += 1

@@ -65,7 +65,7 @@ class Field(FieldLogic):
         super().__init__(width, height)
         self.gui = FieldGUI(self.width, self.height)
         self.game_ended = False
-        
+
     def clear_field(self):
         for row in self.gui.images:
             for col in row:

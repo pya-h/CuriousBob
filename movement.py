@@ -39,9 +39,9 @@ class Coordinates:
 
 class Direction(Enum):
     DOWN = 0
-    UP = 2
+    UP = 1
+    LEFT = 2
     RIGHT = 3
-    LEFT = 1
     
     @staticmethod
     def From(d: int):
@@ -52,9 +52,14 @@ class Direction(Enum):
                 return v
             
     @staticmethod
-    def Random():
-        return Direction.From(randint(Direction.DOWN.value, Direction.RIGHT.value))
-    
+    def Random(axis: str|None = None):
+        if not axis:
+            return Direction.From(randint(Direction.DOWN.value, Direction.RIGHT.value))
+        if axis.lower() == 'h':
+            return Direction.From(randint(Direction.LEFT.value, Direction.RIGHT.value))
+        if axis.lower() == 'v':
+            return Direction.From(randint(Direction.DOWN.value, Direction.UP.value))
+        raise ValueError("Invalid Axis: axis can be 'h' or 'v'.")
     def __str__(self) -> str:
         match self:
             case Direction.UP:
@@ -65,3 +70,9 @@ class Direction(Enum):
                 return '\u2190'
             case _:
                 return '\u2193'
+            
+    def is_horizontal(self) -> bool:
+        return self.value == Direction.RIGHT.value or self == Direction.LEFT.value
+    
+    def is_vertical(self) -> bool:
+        return self.value == Direction.UP.value or self == Direction.DOWN.value
