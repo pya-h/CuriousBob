@@ -35,11 +35,20 @@ class Field(FieldLogic):
                     entities = self.get_cell(coords)
                     entity = entities[0] if entities else None 
                     if not entity or math.floor(cell_height / 2) != ch:
-                        print(('  ' * cell_width) + '|', end='')
+                        if math.floor(cell_height / 2) != ch:  
+                            print(f"{' ':{cell_width*2}}" + '|', end='')
+                        else:
+                            en = ''
+                            for agent in agents:
+                                if agent.position == coords:
+                                    en += agent.__str__()
+                            print(f"{en:{cell_width*2}}" + '|', end='')
+
                     else:
+                        en = ''
                         for agent in agents:
-                            en = agent.__str__() if agent.position == coords else ''
-                                
+                            if agent.position == coords:
+                                en += agent.__str__()
                         if True:
                         # if entity.identified > 0:
                             if (isinstance(entity, Hole) and entity.orbs):
