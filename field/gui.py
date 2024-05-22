@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import filedialog
 from PIL import ImageTk, Image
 from field.logic import FieldLogic
 from agent import Agent

@@ -33,12 +33,12 @@ class Candidate:
 class Agent(Entity):
     NumberOfAgents = 0
     @staticmethod
-    def DefaultAvatar() -> Dict[Direction, Avatar]:
+    def DefaultAvatar(id: int) -> Dict[Direction, Avatar]:
         return { 
-            Direction.UP: Avatar('resources/agent/up.png', 60),
-            Direction.DOWN: Avatar('resources/agent/down.png', 60),
-            Direction.RIGHT: Avatar('resources/agent/right.png', 60),
-            Direction.LEFT: Avatar('resources/agent/left.png', 60),       
+            Direction.UP: Avatar(f'resources/agent{id}/up.png', 60),
+            Direction.DOWN: Avatar(f'resources/agent{id}/down.png', 60),
+            Direction.RIGHT: Avatar(f'resources/agent{id}/right.png', 60),
+            Direction.LEFT: Avatar(f'resources/agent{id}/left.png', 60),       
         }
 
     def __init__(self, position: Coordinates | None = None, avatars: Dict[Direction, Avatar] = None) -> None:
@@ -47,7 +47,7 @@ class Agent(Entity):
         self.direction: Direction = Direction.Random()
         self.moves = 0
         self.actions = 0
-        self.__avatars = avatars if avatars else Agent.DefaultAvatar()
+        self.__avatars = avatars if avatars else Agent.DefaultAvatar(self.id)
         self.reach_to_candidate: Candidate = None
         self.candidate: Candidate = None
         self.no_point_moving_orb = None  # for when there's no candidate, this could be useful by moving orb, so it isnt required to move back to it just for moving it again.
