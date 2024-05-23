@@ -29,14 +29,13 @@ class FieldLogic:
             for j in range(self.height):
                 self.cells[i][j] = []
 
-      
-    def update_cells(self, agent: Agent):
+
+    def update_cells(self):
         self.init_cells()
         for h in self.holes:
             self.place_in_cell(h)
         for o in self.orbs:
             self.place_in_cell(o)
-        # self.place_in_cell(agent)  
 
     def place_in_cell(self, entity: Entity|None):
         if not entity:
@@ -44,11 +43,11 @@ class FieldLogic:
         x, y = entity.position.convert_to_indices()
         if entity not in self.cells[y][x]:
             self.cells[y][x].append(entity)
-        
+
     def get_cell(self, coord: Coordinates):
         x, y = coord.convert_to_indices()
         return self.cells[y][x]
-        
+
     def add_random_holes(self, number_of_holes: int):
         if number_of_holes <= 0:
             raise ValueError('Number of holes must be a positive number.')
@@ -58,7 +57,7 @@ class FieldLogic:
             self.holes.append(hole)
             self.place_in_cell(hole)
             last_id += 1
-        
+
     def add_hole(self, position: Coordinates):
         hole = Hole(id=Hole.GetNextId(self.holes), position=position)
         self.holes.append(hole)
@@ -73,28 +72,29 @@ class FieldLogic:
             self.orbs.append(orb)
             self.place_in_cell(orb)
             last_id += 1
-            
+
     def add_orb(self, position: Coordinates):
         self.orbs.append(Orb(id=Orb.GetNextId(self.orbs), position=position))
-      
+
     def get_remaining_orbs(self):
         out_orbs = list(filter(lambda o: not o.hole, self.orbs))
         return len(out_orbs)
-        
+
     def update_ui(self, agent: Agent):
         pass
-     
-    def cell_has_orb(self, position: Coordinates):
+
+    def is_cell_available(self, position: Coordinates):
+        '''check if the cell can contain a new orb or not'''
         x, y = position.convert_to_indices()
         cell = self.cells[y][x]
         for item in cell:
             if isinstance(item, Orb):
-                return True
-            elif isinstance(item, Hole) and item.orbs:
-                return True
-        return False
-    
-    def shake(self):
+                return False
+            elif isinstance(item, Hole) and not item.has_room():
+                return False
+        return True
+
+    def shake(self, agents: List[Agent]):
         orbs: List[Orb] = []
         for row in self.cells:
             for cell in row:
@@ -102,7 +102,7 @@ class FieldLogic:
                     for item in cell:
                         if isinstance(item, Orb) and item.hole is None:
                             orbs.append(item)
-                            
+
         for orb in orbs:
             rnd = randint(0, 100)
             if rnd < 10:
@@ -111,7 +111,7 @@ class FieldLogic:
                     # because the taget cell may be full. if after 4 times it didnt success go to next orb
                     rnd_direction = Direction.Random()
                     new_position = Coordinates(orb.position.x, orb.position.y)
-                    
+
                     match rnd_direction:
                         case Direction.RIGHT:
                             if new_position.x < self.width:
@@ -133,9 +133,10 @@ class FieldLogic:
                                 new_position.y += 1
                             else:
                                 new_position.y -= 1
-                                
-                    if not self.cell_has_orb(new_position):
+
+                    if self.is_cell_available(new_position):
                         orb.position = new_position
-                        orb.identified = 0
+                        for agent in agents:
+                            agent.forget(orb)
+                        # TODO: check what happens if orb falls into a hole
                         break
-                        

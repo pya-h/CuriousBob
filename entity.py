@@ -28,7 +28,6 @@ class Entity:
         self.alias: str = f"{self.name} #{self.id}"
         self.shortname: str = f"{''.join([word[0] for word in self.name.split()])}{self.id if self.id else ''}"
         self.__avatars: Dict[int|Direction, Avatar] = {0: avatar} if not isinstance(avatar, dict) else avatar  # TODO: Check if image existss
-        self.identified: int = 0
         self.type = entityType
         Entity.ALL_ENTITIES.append(self)
 

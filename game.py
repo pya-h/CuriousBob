@@ -5,11 +5,10 @@ import time
 from field.logic import FieldType
 from typing import List
 from hole import Hole
-from movement import Direction
 
 
 class Game:
-    MAX_MOVES = 30
+    MAX_MOVES = 40
 
     def __init__(self, fieldWidth: int = 7, fieldHegiht: int = 7, number_of_holes: int = 5, number_of_height: int = 5,) -> None:
         self.field = Field(fieldWidth, fieldHegiht)
@@ -17,35 +16,35 @@ class Game:
         self.field.add_random_holes(number_of_holes)
         self.field.add_random_orbs(number_of_height)
         self.no_move_rep = 0
-        
+
     def clear_scrren(self):
         '''Clear console. Command may change in different OSes'''
         os.system("clear")
-        
+
     def wait(self, delay=1):
         '''Delay between agent moves, by calling sleep. delay unit is seconds. If delay value is set None, moves will update with hitting Enter.'''
         if not delay:
             input()
             return
         time.sleep(delay)
-        
+
     def agents_has_won(self):
         return not self.field.get_remaining_orbs()
-    
+
     def do_next_move(self) -> bool:
         if not self.field.get_remaining_orbs():
             return True
-        for _, agent in enumerate(self.agents):
+        for agent in self.agents:
 
             if agent.moves >= self.MAX_MOVES:
                 continue
-            print("A@", agent.position, " -> ", agent.direction)
+            print(f"A{agent.id}", " -> ", agent.direction)
 
             agent.look_around(self.field)
             candidate_transfer_fulfilled = False
             if not agent.candidate:
                 if not agent.reach_to_candidate:
-                    agent.reach_to_candidate = agent.find_next_best_displacement(self.field)
+                    agent.reach_to_candidate = agent.find_next_best_displacement()
                 if agent.reach_to_candidate:
                     '''set the agent the same position as orb to start holding ti'''
                     reached = agent.move_forward_to(agent.reach_to_candidate.orb, self.agents)
@@ -57,9 +56,9 @@ class Game:
                         self.no_move_rep += 1
                     else:
                         self.no_move_rep = 0
-                    if self.no_move_rep >= 3:
-                        agent.force_move(self.field, self.agents)
-                        self.no_move_rep = 0
+                    # if self.no_move_rep >= 6:
+                    #     agent.force_move(self.field, self.agents)
+                    #     self.no_move_rep = 0
                     continue
             else:
                 # if there is agent.candidate from before
@@ -71,7 +70,7 @@ class Game:
                     self.no_move_rep += 1
                 else:
                     self.no_move_rep = 0
-                    
+
                 if self.no_move_rep >= 3:
                     agent.force_move(self.field, self.agents)
                     self.no_move_rep = 0
@@ -83,7 +82,7 @@ class Game:
                 #             agent.direction = Direction.DOWN
                 #         else:
                 #             agent.direction = Direction.UP
-                            
+
                 #     if agent.direction == Direction.DOWN and self.field.height - agent.position.y >= most:
                 #         if agent.position.x <= mid:
                 #             agent.direction = Direction.RIGHT
@@ -102,14 +101,17 @@ class Game:
                         agent.candidate.hole = cell[0]
             if candidate_transfer_fulfilled or do_drop:
                 try:
-                    agent.candidate.drop()
-                    self.field.shake()
+                    agent.candidate.drop(agent.id)
+                    for ag in self.agents:
+                        ag.forget(agent.candidate.orb)
+
+                    self.field.shake(self.agents)
                     agent.candidate = None
                 except Exception as ex:
                     print("ERROR", ex)
                     agent.candidate = None
         return self.agents[0].moves >= self.MAX_MOVES and self.agents[1].moves >= self.MAX_MOVES
-    
+
     def simulate(self):
         self.field.run(game)
         if self.field.type != FieldType.GUI:
@@ -120,7 +122,7 @@ class Game:
                 if game_ended:
                     return
                 self.wait()
-                
+
 if __name__ == '__main__':
     game = Game()
     game.simulate()
@@ -128,5 +130,5 @@ if __name__ == '__main__':
         print("All orbs are placed in holes.")
     else:
         print(f"Agent failed to complete its duty within {Game.MAX_MOVES} moves.")
-        
-    
+
+

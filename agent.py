@@ -18,11 +18,12 @@ class Candidate:
     def distance(self):
         return self.orb - self.hole
 
-    def drop(self):
+    def drop(self, dropper_id: int):
         if not self.hole.has_room():
             raise ValueError("Hole cant be full for drop")
         self.orb.hole = self.hole
         self.hole.orbs.append(self.orb)
+        self.orb.drop_by = dropper_id
 
     def __str__(self) -> str:
         return f"Candidate: Orb@{self.orb.position} -> Hole@{self.hole.position}"
@@ -52,6 +53,7 @@ class Agent(Entity):
         self.candidate: Candidate = None
         self.no_point_moving_orb = None  # for when there's no candidate, this could be useful by moving orb, so it isnt required to move back to it just for moving it again.
         self.one_directional_moves = 0
+        self.discoveries: List[Orb|Hole] = []
 
     @property
     def avatar(self):
@@ -69,37 +71,27 @@ class Agent(Entity):
         x, y = self.extract_cooordinates()
         steps = [-1, 0, 1]
         new_founds = 0
-        print("Proximity Identied:")
         for i in steps:
             for j in steps:
                 if x + i >= 1 and y + j >= 1 and x + i <= field.width and y + j <= field.height:
                     cell = Coordinates(x + i, y + j)
                     entities = field.get_cell(cell)
                     for entity in entities:
-                        if entity and (isinstance(entity, Hole) or isinstance(entity, Orb)):
-                            # identified
-                            entity.identified = self.id
-                            new_founds += 1
-                            print(cell, entity.name)
+                        if entity is not None and entity not in self.discoveries:
+                            if (isinstance(entity, Hole) and entity.has_room()) or (isinstance(entity, Orb) and not entity.hole):
+                                # identified
+                                self.discoveries.append(entity)
+                                new_founds += 1
 
         return new_founds
 
-    def find_next_best_displacement(self, field):
-        orbs: List[Orb] = []
-        holes: List[Hole] = []
-
-        for row in field.cells:
-            for cell in row:
-                if cell:
-                    for item in cell:
-                        if item.identified == self.id:
-                            if isinstance(item, Orb) and not item.hole and not item.targeted:
-                                orbs.append(item)
-                            elif isinstance(item, Hole) and not item.orbs and not item.targeted:
-                                holes.append(item)
+    def find_next_best_displacement(self):
+        orbs: List[Orb] = list(filter(lambda item: isinstance(item, Orb) and item.is_available, self.discoveries))
+        holes: List[Hole] = list(filter(lambda item: isinstance(item, Hole) and item.is_available, self.discoveries))
 
         if not holes or not orbs:
             return None
+
         candidate: Candidate = Candidate(orbs[0], holes[0])
         for orb in orbs:
             for hole in holes:
@@ -108,9 +100,24 @@ class Agent(Entity):
                     orb.targeted = hole.targeted = self.id
         return candidate
 
+    def check_for_less_distant_hole(self):
+        if not self.candidate:
+            return
+        holes: List[Hole] = list(filter(lambda item: isinstance(item, Hole) and item != self.candidate.hole and item.is_available, self.discoveries))
+
+        if not holes:
+            return
+
+        for hole in holes:
+            if (hole.has_room()) and (self.candidate.distance > self.candidate.orb - hole):
+                self.candidate.hole.targeted = None
+                self.candidate.hole = hole
+                hole.targeted = self.id
+
     def direct_into(self, target: Candidate):
         if not target or not target.orb or not target.hole:
             return
+        self.check_for_less_distant_hole()
         if target.orb.position.x < target.hole.position.x:
             self.direction = Direction.RIGHT
         elif target.orb.position.x > target.hole.position.x:
@@ -167,7 +174,7 @@ class Agent(Entity):
         if candidate:
             candidate.orb.position.x = self.position.x
             candidate.orb.position.y = self.position.y
-            field.update_cells(self)
+            field.update_cells()
 
         other = agents[0] if agents[0] != self else agents[-1]
 
@@ -236,3 +243,14 @@ class Agent(Entity):
         self.direction = Direction.Random()
         while self.move(field, self.candidate, all_agents) == -1:
             self.direction = Direction.Random()
+
+    def forget(self, entity: Orb|Hole):
+        if entity in self.discoveries:
+            self.discoveries.remove(entity)
+            if isinstance(entity, Orb):
+                if entity.hole is not None and not entity.hole.has_room():
+                    self.forget(entity.hole)
+            elif isinstance(entity, Hole) and entity.orbs:
+                for orb in entity.orbs:
+                    if orb in self.discoveries:
+                        self.discoveries.remove(orb)
