@@ -21,7 +21,7 @@ class Game:
         '''Clear console. Command may change in different OSes'''
         os.system("clear")
 
-    def wait(self, delay=1):
+    def wait(self, delay=5):
         '''Delay between agent moves, by calling sleep. delay unit is seconds. If delay value is set None, moves will update with hitting Enter.'''
         if not delay:
             input()
@@ -41,6 +41,7 @@ class Game:
             print(f"A{agent.id}", " -> ", agent.direction)
 
             agent.look_around(self.field)
+            print('Discoveries: ', len(agent.discoveries))
             candidate_transfer_fulfilled = False
             if not agent.candidate:
                 if not agent.reach_to_candidate:
@@ -56,9 +57,9 @@ class Game:
                         self.no_move_rep += 1
                     else:
                         self.no_move_rep = 0
-                    # if self.no_move_rep >= 6:
-                    #     agent.force_move(self.field, self.agents)
-                    #     self.no_move_rep = 0
+                    if self.no_move_rep >= 5:
+                        agent.force_move(self.field, self.agents)
+                        self.no_move_rep = 0
                     continue
             else:
                 # if there is agent.candidate from before
@@ -71,24 +72,10 @@ class Game:
                 else:
                     self.no_move_rep = 0
 
-                if self.no_move_rep >= 3:
+                if self.no_move_rep >= 5:
                     agent.force_move(self.field, self.agents)
                     self.no_move_rep = 0
-                # if not agent.candidate:
-                #     most = int(0.8 * self.field.width)
-                #     mid = int(0.5 * self.field.width)
-                #     if agent.direction == Direction.RIGHT and self.field.width - agent.position.x >= most:
-                #         if agent.position.y <= mid:
-                #             agent.direction = Direction.DOWN
-                #         else:
-                #             agent.direction = Direction.UP
 
-                #     if agent.direction == Direction.DOWN and self.field.height - agent.position.y >= most:
-                #         if agent.position.x <= mid:
-                #             agent.direction = Direction.RIGHT
-                #         else:
-                #             agent.direction = Direction.LEFT
-                #     continue
             do_drop = False
             if agent.candidate and agent.candidate.fulfilled():
                 do_drop = True
@@ -102,8 +89,6 @@ class Game:
             if candidate_transfer_fulfilled or do_drop:
                 try:
                     agent.candidate.drop(agent.id)
-                    for ag in self.agents:
-                        ag.forget(agent.candidate.orb)
 
                     self.field.shake(self.agents)
                     agent.candidate = None
