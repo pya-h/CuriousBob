@@ -13,11 +13,11 @@ class Candidate:
     def __init__(self, orb: Orb, hole: Hole) -> None:
         self.orb = orb
         self.hole = hole
-        
+
     @property
     def distance(self):
         return self.orb - self.hole
-    
+
     def drop(self):
         if not self.hole.has_room():
             raise ValueError("Hole cant be full for drop")
@@ -25,20 +25,20 @@ class Candidate:
         self.hole.orbs.append(self.orb)
 
     def __str__(self) -> str:
-        return f"Candidate: Orb@{self.orb.position} -> Hole@{self.hole.position}"    
-    
+        return f"Candidate: Orb@{self.orb.position} -> Hole@{self.hole.position}"
+
     def fulfilled(self):
         return self.orb and self.hole and self.orb.position == self.hole.position
-   
+
 class Agent(Entity):
     NumberOfAgents = 0
     @staticmethod
     def DefaultAvatar(id: int) -> Dict[Direction, Avatar]:
-        return { 
+        return {
             Direction.UP: Avatar(f'resources/agent{id}/up.png', 60),
             Direction.DOWN: Avatar(f'resources/agent{id}/down.png', 60),
             Direction.RIGHT: Avatar(f'resources/agent{id}/right.png', 60),
-            Direction.LEFT: Avatar(f'resources/agent{id}/left.png', 60),       
+            Direction.LEFT: Avatar(f'resources/agent{id}/left.png', 60),
         }
 
     def __init__(self, position: Coordinates | None = None, avatars: Dict[Direction, Avatar] = None) -> None:
@@ -60,7 +60,7 @@ class Agent(Entity):
 
     def __str__(self) -> str:
         return f"A{self.id}{self.direction}" if self.direction != Direction.LEFT else f"{self.direction}A{self.id}"
-        
+
     def extract_cooordinates(self) -> Union[int, int]:
         return self.position.x, self.position.y
 
@@ -81,9 +81,9 @@ class Agent(Entity):
                             entity.identified = self.id
                             new_founds += 1
                             print(cell, entity.name)
-                        
+
         return new_founds
-    
+
     def find_next_best_displacement(self, field):
         orbs: List[Orb] = []
         holes: List[Hole] = []
@@ -92,12 +92,11 @@ class Agent(Entity):
             for cell in row:
                 if cell:
                     for item in cell:
-                        if item.identified:
+                        if item.identified == self.id:
                             if isinstance(item, Orb) and not item.hole and not item.targeted:
                                 orbs.append(item)
                             elif isinstance(item, Hole) and not item.orbs and not item.targeted:
                                 holes.append(item)
-                    
 
         if not holes or not orbs:
             return None
@@ -108,7 +107,7 @@ class Agent(Entity):
                     candidate = Candidate(orb, hole)
                     orb.targeted = hole.targeted = self.id
         return candidate
-    
+
     def direct_into(self, target: Candidate):
         if not target or not target.orb or not target.hole:
             return
@@ -124,8 +123,8 @@ class Agent(Entity):
             return True
 
         return False
+
     def check_one_directional_moves(self, previous_direction: Direction, x_max: int, y_max: int) -> bool:
-        
         '''This is for getting the agen out of one directional move loop; if its taking so long moving in one didrection, this method chanes it for the better'''
         if not self.candidate and previous_direction == self.direction:
             self.one_directional_moves += 1
@@ -147,10 +146,10 @@ class Agent(Entity):
                     # if the agent is in the middle of the field, it needs a larger threshold
                     self.direction = Direction.Random(axis='h')
             return True
-        
+
         self.one_directional_moves = 0
         return False
-    
+
     def move(self, field, candidate: Candidate|None, agents: List[Entity]) -> None|int:
         prev_pos = Coordinates(self.position.x, self.position.y)
         prev_dir = self.direction
@@ -177,7 +176,7 @@ class Agent(Entity):
             return -1
         self.moves += 1
         return None
-    
+
     def move_forward_to(self, target: Entity, agents: List[Entity]):
         prev_pos = Coordinates(self.position.x, self.position.y)
         other = agents[0] if agents[0] != self else agents[-1]
@@ -191,7 +190,7 @@ class Agent(Entity):
             else:
                 self.moves += 1
             return int(self.position == target.position)
-        
+
         if self.position.x > target.position.x:
             self.direction = Direction.LEFT
             self.position.x -= 1
@@ -201,7 +200,7 @@ class Agent(Entity):
             else:
                 self.moves += 1
             return int(self.position == target.position)
-        
+
         if self.position.y < target.position.y:
             self.direction = Direction.DOWN
             self.position.y += 1
@@ -222,7 +221,7 @@ class Agent(Entity):
                 self.moves += 1
             return int(self.position == target.position)
         return -1
-    
+
     def check_agent_position(self, field):
         '''Prevent egant from going out of the field'''
         while not self.direction \
@@ -231,7 +230,7 @@ class Agent(Entity):
             or (self.direction == Direction.UP and self.position.y == 1) \
             or (self.direction == Direction.DOWN and self.position.y == field.height):
                 self.direction = Direction.Random()
-                
+
     def force_move(self, field: any, all_agents: List[Entity]):
         '''This is for when both agents are stock next to each other and cant move'''
         self.direction = Direction.Random()

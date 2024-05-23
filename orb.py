@@ -15,5 +15,6 @@ class Orb(Entity):
         avatar = avatar if avatar else Orb.DefaultAvatar()
         super().__init__(name="Orb", id=id, avatar=avatar, entityType=EntityType.ORB, position=position)
         self.targeted: int = 0
-        
+
         self.hole: Hole|None = None  # The hole which this orb is dropped to. If orb.hole is None it means this orb is still outside in the field
+        self.drop_by: int|None = None

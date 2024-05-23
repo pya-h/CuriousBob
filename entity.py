@@ -12,7 +12,7 @@ class EntityType(Enum):
 
 class Entity:
     ALL_ENTITIES = []
-    
+
     def __init__(self, id: int, name: str, avatar: Avatar|List[Avatar], entityType: EntityType = EntityType.NONE, position: Coordinates|None = None) -> None:
         if position:
             self.position = position
@@ -31,11 +31,11 @@ class Entity:
         self.identified: int = 0
         self.type = entityType
         Entity.ALL_ENTITIES.append(self)
-           
+
     @property
     def avatar(self):
         '''returns the avatar assigned to an entity'''
-        return self.__avatars[0]  
+        return self.__avatars[0]
 
     def overlaps_on_others(self):
         '''Find out if this entity falls upon the exact same position as a previously defined entity'''
@@ -44,16 +44,16 @@ class Entity:
                return True
 
         return False
-    
+
     @staticmethod
     def GetNextId(entity_list: List[any]) -> int|None:
         '''Get next available id for each type of entity.'''
         try:
-            return max(entity_list, key=lambda e: e.id).id + 1 if entity_list else 1   
+            return max(entity_list, key=lambda e: e.id).id + 1 if entity_list else 1
         except:
             pass
         return None
-    
+
     def __str__(self) -> str:
         return f"{self.alias} is at {self.position}"
 
@@ -61,7 +61,7 @@ class Entity:
         if not isinstance(other, Entity):
             raise ValueError("Other operand must an Entity.")
         return self.position - other.position
-    
+
     def clear_canvas(self, canvas):
         for key in self.__avatars:
             if self.__avatars[key] and self.__avatars[key].canvas_id:
