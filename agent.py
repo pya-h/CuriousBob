@@ -1,6 +1,4 @@
 from movement import Coordinates, Direction
-from enum import Enum
-from random import randint
 from entity import Entity, EntityType
 from typing import Union, List, Dict
 from hole import Hole
@@ -20,13 +18,13 @@ class Candidate:
 
     def drop(self, dropper_id: int):
         if not self.hole.has_room():
-            raise ValueError("Hole cant be full for drop")
+            raise Exception('Hole is full')
         self.orb.hole = self.hole
         self.hole.orbs.append(self.orb)
         self.orb.drop_by = dropper_id
 
     def __str__(self) -> str:
-        return f"Candidate: Orb@{self.orb.position} -> Hole@{self.hole.position}"
+        return f"Candidate: Orb@{self.orb.position} -> Hole@{self.hole.position if self.hole else 'Nowhere'}"
 
     def fulfilled(self):
         return self.orb and self.hole and self.orb.position == self.hole.position
@@ -57,6 +55,7 @@ class Agent(Entity):
         self.one_directional_moves = 0
         self.discoveries: List[Orb|Hole] = []
         self.no_move_rep = 0
+        self.hang_on = 0
 
     @property
     def avatar(self):
@@ -98,7 +97,7 @@ class Agent(Entity):
         candidate: Candidate = Candidate(orbs[0], holes[0])
         for orb in orbs:
             for hole in holes:
-                if (hole.has_room()) and (not orb.hole) and (candidate.distance > orb - hole):
+                if (hole.has_room()) and (not orb.hole) and (candidate.distance > orb - hole or candidate.hole is None):
                     candidate = Candidate(orb, hole)
                     orb.targeted = hole.targeted = self.id
         return candidate
@@ -121,16 +120,18 @@ class Agent(Entity):
         if not target or not target.orb or not target.hole:
             return
         self.check_for_less_distant_hole()
-        if target.orb.position.x < target.hole.position.x:
-            self.direction = Direction.RIGHT
-        elif target.orb.position.x > target.hole.position.x:
-            self.direction = Direction.LEFT
-        elif target.orb.position.y < target.hole.position.y:
-            self.direction = Direction.DOWN
-        elif target.orb.position.y > target.hole.position.y:
-            self.direction = Direction.UP
-        else:
-            return True
+
+        if target.hole:
+            if target.orb.position.x < target.hole.position.x:
+                self.direction = Direction.RIGHT
+            elif target.orb.position.x > target.hole.position.x:
+                self.direction = Direction.LEFT
+            elif target.orb.position.y < target.hole.position.y:
+                self.direction = Direction.DOWN
+            elif target.orb.position.y > target.hole.position.y:
+                self.direction = Direction.UP
+            else:
+                return True
 
         return False
 
@@ -247,9 +248,11 @@ class Agent(Entity):
         while self.move(field, self.candidate, all_agents) == -1:
             self.direction = Direction.Random()
 
-    def forget(self, entity: Orb|Hole):
+    def forget(self, entity: Orb|Hole, just_entity_itself: bool = False):
         if entity in self.discoveries:
             self.discoveries.remove(entity)
+            if just_entity_itself:
+                return
             if isinstance(entity, Orb):
                 if entity.hole is not None and not entity.hole.has_room():
                     self.forget(entity.hole)
@@ -257,3 +260,18 @@ class Agent(Entity):
                 for orb in entity.orbs:
                     if orb in self.discoveries:
                         self.discoveries.remove(orb)
+
+    def try_to_sabotage(self, field) -> Orb | None:
+        cell: List[Entity] = field.get_cell(self.position)
+        try:  # skip this function if the cell is not array of entities
+            if not len(cell):
+                return
+        except:
+            return
+
+        for entity in cell:
+            if isinstance(entity, Orb) and entity.hole is not None and entity.drop_by != self.id:
+                # throw the orb to nowhere
+                field.throw_orb(cell, entity, self)
+                return entity
+        return None

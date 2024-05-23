@@ -34,10 +34,18 @@ class Game:
         if not self.field.get_remaining_orbs():
             return True
         for agent in self.agents:
-
+            if agent.hang_on:
+                agent.hang_on -= 1
+                continue
             if agent.moves >= self.MAX_MOVES:
                 continue
             print(f"A{agent.id}", " -> ", agent.direction)
+            thrown_orb = agent.try_to_sabotage(self.field)
+            if thrown_orb:
+                for ag in self.agents:
+                    if ag.candidate is not None and ag.candidate.orb == thrown_orb:
+                        ag.candidate = None
+                    ag.forget(thrown_orb, just_entity_itself=True)
 
             agent.look_around(self.field)
             print('Discoveries: ', len(agent.discoveries))
@@ -68,6 +76,7 @@ class Game:
                 r = agent.move(self.field, agent.candidate, self.agents) # move one step closer to near hole
                 if r == -1:
                     agent.no_move_rep += 1
+                    agent.hang_on = 3
                 else:
                     agent.no_move_rep = 0
 
@@ -79,21 +88,22 @@ class Game:
             if agent.candidate and agent.candidate.fulfilled():
                 do_drop = True
             elif agent.candidate:
-                x, y = agent.position.convert_to_indices()
-                cell = self.field.cells[y][x]
-                if cell:
-                    if len(cell) == 1 and isinstance(cell[0], Hole) and not cell[0].orbs:
+                cell = self.field.get_cell(agent.position)
+                for entity in cell:
+                    if isinstance(entity, Hole) and entity.has_room():
                         do_drop = True
-                        agent.candidate.hole = cell[0]
+                        agent.candidate.hole = entity
+
             if candidate_transfer_fulfilled or do_drop:
                 try:
                     agent.candidate.drop(agent.id)
-
+                    agent.forget(agent.candidate.orb)  # this will make agent forget the orb and hole both
                     self.field.shake(self.agents)
                     agent.candidate = None
                 except Exception as ex:
                     print("ERROR", ex)
-                    agent.candidate = None
+                    agent.candidate.hole = None
+
         return self.agents[0].moves >= self.MAX_MOVES and self.agents[1].moves >= self.MAX_MOVES
 
     def simulate(self):
@@ -104,8 +114,12 @@ class Game:
                 self.field.update_ui(self.agents)
                 game_ended = self.do_next_move()
                 if game_ended:
+                    self.show_stats()
                     return
                 self.wait()
+
+    def show_stats(self):
+        '''Show the result at the end of game'''
 
 if __name__ == '__main__':
     game = Game()

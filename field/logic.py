@@ -40,9 +40,9 @@ class FieldLogic:
     def place_in_cell(self, entity: Entity|None):
         if not entity:
             return
-        x, y = entity.position.convert_to_indices()
-        if entity not in self.cells[y][x]:
-            self.cells[y][x].append(entity)
+        cell = self.get_cell(entity.position)
+        if entity not in cell:
+            cell.append(entity)
 
     def get_cell(self, coord: Coordinates):
         x, y = coord.convert_to_indices()
@@ -140,3 +140,23 @@ class FieldLogic:
                             agent.forget(orb)
                         # TODO: check what happens if orb falls into a hole
                         break
+
+    def throw_orb(self, from_cell: List[Entity], orb: Orb, thrower: Agent):
+        from_cell.remove(orb)
+        if orb.hole:
+            if orb in orb.hole.orbs:  # just for caution, this is always true
+                orb.hole.orbs.remove(orb)
+
+        orb.hole = None
+        orb.drop_by = None
+        orb.position.Randomize()
+        while not self.is_cell_available(orb.position):
+            orb.position.Randomize()
+        # check if the orb is not thrown into a hole
+        self.place_in_cell(orb)
+        cell = self.get_cell(orb.position)
+        for item in cell:
+            if isinstance(item, Hole):
+                orb.hole = item
+                orb.drop_by = thrower.id
+                item.orbs.append(orb)
