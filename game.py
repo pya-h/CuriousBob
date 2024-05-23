@@ -15,7 +15,6 @@ class Game:
         self.agents: List[Agent] = [Agent(), Agent()]
         self.field.add_random_holes(number_of_holes)
         self.field.add_random_orbs(number_of_height)
-        self.no_move_rep = 0
 
     def clear_scrren(self):
         '''Clear console. Command may change in different OSes'''
@@ -52,14 +51,14 @@ class Game:
                     if reached == 1:
                         agent.candidate = agent.reach_to_candidate
                         agent.reach_to_candidate = None
-                        self.no_move_rep = 0
+                        agent.no_move_rep = 0
                     elif reached == -1:
-                        self.no_move_rep += 1
+                        agent.no_move_rep += 1
                     else:
-                        self.no_move_rep = 0
-                    if self.no_move_rep >= 5:
+                        agent.no_move_rep = 0
+                    if agent.no_move_rep >= agent.NO_MOVE_REP_MAX:
                         agent.force_move(self.field, self.agents)
-                        self.no_move_rep = 0
+                        agent.no_move_rep = 0
                     continue
             else:
                 # if there is agent.candidate from before
@@ -68,13 +67,13 @@ class Game:
             if not candidate_transfer_fulfilled:
                 r = agent.move(self.field, agent.candidate, self.agents) # move one step closer to near hole
                 if r == -1:
-                    self.no_move_rep += 1
+                    agent.no_move_rep += 1
                 else:
-                    self.no_move_rep = 0
+                    agent.no_move_rep = 0
 
-                if self.no_move_rep >= 5:
+                if agent.no_move_rep >= agent.NO_MOVE_REP_MAX:
                     agent.force_move(self.field, self.agents)
-                    self.no_move_rep = 0
+                    agent.no_move_rep = 0
 
             do_drop = False
             if agent.candidate and agent.candidate.fulfilled():

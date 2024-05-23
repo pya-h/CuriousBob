@@ -33,6 +33,8 @@ class Candidate:
 
 class Agent(Entity):
     NumberOfAgents = 0
+    NO_MOVE_REP_MAX = 4
+
     @staticmethod
     def DefaultAvatar(id: int) -> Dict[Direction, Avatar]:
         return {
@@ -54,6 +56,7 @@ class Agent(Entity):
         self.no_point_moving_orb = None  # for when there's no candidate, this could be useful by moving orb, so it isnt required to move back to it just for moving it again.
         self.one_directional_moves = 0
         self.discoveries: List[Orb|Hole] = []
+        self.no_move_rep = 0
 
     @property
     def avatar(self):
