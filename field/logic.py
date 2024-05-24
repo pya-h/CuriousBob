@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 from orb import Orb
 from hole import Hole
 from movement import Coordinates
@@ -21,6 +21,7 @@ class FieldLogic:
         self.holes: List[Hole] = []
         self.cells: List[List[List[Entity]]] = []
         self.init_cells()
+        self.final_stats: str | None = None
 
     def init_cells(self):
         self.cells = [[None for _ in range(self.width)] for _ in range(self.height)]
@@ -160,3 +161,40 @@ class FieldLogic:
                 orb.hole = item
                 orb.drop_by = thrower.id
                 item.orbs.append(orb)
+
+    @property
+    def statistics(self):
+        filled_holes = len(list(filter(lambda h: not h.has_room(), self.holes)))
+        empty_holes =  len(self.holes) - filled_holes  # for npow the capacity of holes is 1, so this formula works
+        orbs_inside = 0
+        dropped_by_each: Dict[int, int] = {}
+
+        for orb in self.orbs:
+            if orb.hole:
+                orbs_inside += 1
+                if orb.drop_by not in dropped_by_each:
+                    dropped_by_each[orb.drop_by] = 0
+                dropped_by_each[orb.drop_by] += 1
+
+        orbs_outside = len(self.orbs) - orbs_inside
+        return {
+            'Filled Holes': filled_holes,
+            'Empty Holes': empty_holes,
+            'Orbs Inside': orbs_inside,
+            'Orbs Outside': orbs_outside,
+            'Dropped By Each': dropped_by_each
+        }
+
+    def set_final_stats(self, agents: List[Agent]):
+        stats = self.statistics
+        dropped_by_each = stats['Dropped By Each']
+        for agent in agents:
+            if agent.id in dropped_by_each:
+                stats[f'Dropped By {agent.name}'] = dropped_by_each[agent.id]
+            stats[f'Number of Throws By {agent.name}'] = agent.throws_count
+        del stats['Dropped By Each']
+
+        self.final_stats = ''
+        for tag in stats:
+            self.final_stats += f'{tag}: {stats[tag]}\n'
+        return self.final_stats

@@ -12,7 +12,7 @@ class Game:
 
     def __init__(self, fieldWidth: int = 7, fieldHegiht: int = 7, number_of_holes: int = 5, number_of_height: int = 5,) -> None:
         self.field = Field(fieldWidth, fieldHegiht)
-        self.agents: List[Agent] = [Agent(), Agent()]
+        self.agents: List[Agent] = [Agent(name='Bob'), Agent(name='Patrick')]
         self.field.add_random_holes(number_of_holes)
         self.field.add_random_orbs(number_of_height)
 
@@ -31,6 +31,8 @@ class Game:
         return not self.field.get_remaining_orbs()
 
     def do_next_move(self) -> bool:
+        self.field.set_final_stats(self.agents)
+
         if not self.field.get_remaining_orbs():
             return True
         for agent in self.agents:
@@ -114,12 +116,9 @@ class Game:
                 self.field.update_ui(self.agents)
                 game_ended = self.do_next_move()
                 if game_ended:
-                    self.show_stats()
+                    print(self.field.final_stats)
                     return
                 self.wait()
-
-    def show_stats(self):
-        '''Show the result at the end of game'''
 
 if __name__ == '__main__':
     game = Game()

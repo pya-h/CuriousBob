@@ -42,7 +42,7 @@ class Agent(Entity):
             Direction.LEFT: Avatar(f'resources/agent{id}/left.png', 60),
         }
 
-    def __init__(self, position: Coordinates | None = None, avatars: Dict[Direction, Avatar] = None) -> None:
+    def __init__(self, position: Coordinates | None = None, avatars: Dict[Direction, Avatar] = None, name: str | None = None) -> None:
         Agent.NumberOfAgents += 1
         super().__init__(id=Agent.NumberOfAgents, name="Smart Agent", avatar=avatars, entityType=EntityType.AGENT, position=position)
         self.direction: Direction = Direction.Random()
@@ -56,6 +56,8 @@ class Agent(Entity):
         self.discoveries: List[Orb|Hole] = []
         self.no_move_rep = 0
         self.hang_on = 0
+        self.name: str = name if not None else f'Agent {self.id}'
+        self.throws_count = 0
 
     @property
     def avatar(self):
@@ -183,7 +185,7 @@ class Agent(Entity):
         other = agents[0] if agents[0] != self else agents[-1]
 
         if other.position == self.position:
-            self.position = prev_pos
+            self.return_to_position(prev_pos)
             return -1
         self.moves += 1
         return None
@@ -196,7 +198,7 @@ class Agent(Entity):
             self.direction = Direction.RIGHT
             self.position.x += 1
             if other.position == self.position:
-                self.position = prev_pos
+                self.return_to_position(prev_pos)
                 return -1
             else:
                 self.moves += 1
@@ -206,7 +208,7 @@ class Agent(Entity):
             self.direction = Direction.LEFT
             self.position.x -= 1
             if other.position == self.position:
-                self.position = prev_pos
+                self.return_to_position(prev_pos)
                 return -1
             else:
                 self.moves += 1
@@ -216,7 +218,7 @@ class Agent(Entity):
             self.direction = Direction.DOWN
             self.position.y += 1
             if other.position == self.position:
-                self.position = prev_pos
+                self.return_to_position(prev_pos)
                 return -1
             else:
                 self.moves += 1
@@ -226,12 +228,17 @@ class Agent(Entity):
             self.direction = Direction.UP
             self.position.y -= 1
             if other.position == self.position:
-                self.position = prev_pos
+                self.return_to_position(prev_pos)
                 return -1
             else:
                 self.moves += 1
             return int(self.position == target.position)
         return -1
+
+    def return_to_position(self, position: Coordinates):
+        self.position = Coordinates(position.x, position.y)
+        if self.candidate:
+            self.candidate.orb.position = Coordinates(position.x, position.y)  # preventing position of reference copy
 
     def check_agent_position(self, field):
         '''Prevent egant from going out of the field'''
@@ -273,5 +280,6 @@ class Agent(Entity):
             if isinstance(entity, Orb) and entity.hole is not None and entity.drop_by != self.id:
                 # throw the orb to nowhere
                 field.throw_orb(cell, entity, self)
+                self.throws_count += 1
                 return entity
         return None
