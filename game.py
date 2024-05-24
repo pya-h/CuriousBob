@@ -104,7 +104,8 @@ class Game:
                     agent.candidate = None
                 except Exception as ex:
                     print("ERROR", ex)
-                    agent.candidate.hole = None
+                    if agent.candidate:
+                        agent.candidate.hole = None
         self.field.set_final_stats(self.agents)
         return self.agents[0].moves >= self.MAX_MOVES and self.agents[1].moves >= self.MAX_MOVES
 
