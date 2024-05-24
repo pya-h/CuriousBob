@@ -192,6 +192,7 @@ class FieldLogic:
             if agent.id in dropped_by_each:
                 stats[f'Dropped By {agent.name}'] = dropped_by_each[agent.id]
             stats[f'Number of Throws By {agent.name}'] = agent.throws_count
+            stats[f'Number of {agent.name} Moves'] = agent.moves
         del stats['Dropped By Each']
 
         self.final_stats = ''

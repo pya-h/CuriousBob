@@ -31,8 +31,7 @@ class Game:
         return not self.field.get_remaining_orbs()
 
     def do_next_move(self) -> bool:
-        self.field.set_final_stats(self.agents)
-
+        
         if not self.field.get_remaining_orbs():
             return True
         for agent in self.agents:
@@ -42,12 +41,6 @@ class Game:
             if agent.moves >= self.MAX_MOVES:
                 continue
             print(f"A{agent.id}", " -> ", agent.direction)
-            thrown_orb = agent.try_to_sabotage(self.field)
-            if thrown_orb:
-                for ag in self.agents:
-                    if ag.candidate is not None and ag.candidate.orb == thrown_orb:
-                        ag.candidate = None
-                    ag.forget(thrown_orb, just_entity_itself=True)
 
             agent.look_around(self.field)
             print('Discoveries: ', len(agent.discoveries))
@@ -86,6 +79,13 @@ class Game:
                     agent.force_move(self.field, self.agents)
                     agent.no_move_rep = 0
 
+            thrown_orb = agent.try_to_sabotage(self.field)
+            if thrown_orb:
+                for ag in self.agents:
+                    if ag.candidate is not None and ag.candidate.orb == thrown_orb:
+                        ag.candidate = None
+                    ag.forget(thrown_orb, just_entity_itself=True)
+
             do_drop = False
             if agent.candidate and agent.candidate.fulfilled():
                 do_drop = True
@@ -105,7 +105,7 @@ class Game:
                 except Exception as ex:
                     print("ERROR", ex)
                     agent.candidate.hole = None
-
+        self.field.set_final_stats(self.agents)
         return self.agents[0].moves >= self.MAX_MOVES and self.agents[1].moves >= self.MAX_MOVES
 
     def simulate(self):
