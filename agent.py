@@ -182,9 +182,9 @@ class Agent(Entity):
             candidate.orb.position.y = self.position.y
             field.update_cells()
 
-        other = agents[0] if agents[0] != self else agents[-1]
+        other = (agents[0] if agents[0] != self else agents[-1]) if len(agents) > 1 else None
 
-        if other.position == self.position:
+        if other is not None and other.position == self.position:
             self.return_to_position(prev_pos)
             return -1
         self.moves += 1
@@ -192,12 +192,15 @@ class Agent(Entity):
 
     def move_forward_to(self, target: Entity, agents: List[Entity]):
         prev_pos = Coordinates(self.position.x, self.position.y)
-        other = agents[0] if agents[0] != self else agents[-1]
+        if len(agents) > 1:
+            other = agents[0] if agents[0] != self else agents[-1]
+        else:
+            other = None
 
         if self.position.x < target.position.x:
             self.direction = Direction.RIGHT
             self.position.x += 1
-            if other.position == self.position:
+            if other is not None and other.position == self.position:
                 self.return_to_position(prev_pos)
                 return -1
             else:
@@ -207,7 +210,7 @@ class Agent(Entity):
         if self.position.x > target.position.x:
             self.direction = Direction.LEFT
             self.position.x -= 1
-            if other.position == self.position:
+            if other is not None and other.position == self.position:
                 self.return_to_position(prev_pos)
                 return -1
             else:
@@ -217,7 +220,7 @@ class Agent(Entity):
         if self.position.y < target.position.y:
             self.direction = Direction.DOWN
             self.position.y += 1
-            if other.position == self.position:
+            if other is not None and other.position == self.position:
                 self.return_to_position(prev_pos)
                 return -1
             else:
@@ -227,7 +230,7 @@ class Agent(Entity):
         if self.position.y > target.position.y:
             self.direction = Direction.UP
             self.position.y -= 1
-            if other.position == self.position:
+            if other is not None and other.position == self.position:
                 self.return_to_position(prev_pos)
                 return -1
             else:

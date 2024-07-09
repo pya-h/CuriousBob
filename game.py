@@ -34,11 +34,15 @@ class Game:
         
         if not self.field.get_remaining_orbs():
             return True
+        all_out_of_moves = True
+
         for agent in self.agents:
+            if agent.moves >= self.MAX_MOVES:
+                continue
+            all_out_of_moves = False
+
             if agent.hang_on:
                 agent.hang_on -= 1
-                continue
-            if agent.moves >= self.MAX_MOVES:
                 continue
             print(f"A{agent.id}", " -> ", agent.direction)
 
@@ -107,7 +111,7 @@ class Game:
                     if agent.candidate:
                         agent.candidate.hole = None
         self.field.set_final_stats(self.agents)
-        return self.agents[0].moves >= self.MAX_MOVES and self.agents[1].moves >= self.MAX_MOVES
+        return all_out_of_moves
 
     def simulate(self):
         self.field.run(game)
