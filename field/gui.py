@@ -93,7 +93,7 @@ class Field(FieldLogic):
     def check_for_events(self, game):
         self.gui.update()  # Process events
         self.go_for_next_move(game)
-        self.gui.after(1000, self.check_for_events, game)  # Check again after 100ms
+        self.gui.after(500, self.check_for_events, game)  # Check again after 100ms
 
     def type(self) -> FieldType:
         return FieldType.GUI

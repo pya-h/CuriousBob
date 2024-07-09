@@ -12,7 +12,7 @@ class FieldType(Enum):
     GUI = 2
 
 class FieldLogic:
-    def __init__(self, width: int = 7, height: int = 7) -> None:
+    def __init__(self, width: int = 5, height: int = 5) -> None:
         if width < 2 or height < 2:
             raise ValueError("Field dimention cant be that small.")
         self.height: int = height
@@ -199,3 +199,15 @@ class FieldLogic:
         for tag in stats:
             self.final_stats += f'{tag}: {stats[tag]}\n'
         return self.final_stats
+    
+    def get_orb_by_id(self, id: int):
+        result = list(filter(lambda orb: orb.id == id, self.orbs))
+        if result:
+            return result[0]
+        return None
+    
+    def get_hole_by_id(self, id: int):
+        result = list(filter(lambda hole: hole.id == id, self.holes))
+        if result:
+            return result[0]
+        return None

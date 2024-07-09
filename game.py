@@ -1,18 +1,19 @@
 from field.gui import Field
-from agent import Agent
+from agent import Agent, Candidate
 import os
 import time
 from field.logic import FieldType
 from typing import List
 from hole import Hole
+from movement import Direction
 
 
 class Game:
-    MAX_MOVES = 40
+    MAX_MOVES = 30
 
-    def __init__(self, fieldWidth: int = 7, fieldHegiht: int = 7, number_of_holes: int = 5, number_of_height: int = 5,) -> None:
+    def __init__(self, fieldWidth: int = 5, fieldHegiht: int = 5, number_of_holes: int = 3, number_of_height: int = 3,) -> None:
         self.field = Field(fieldWidth, fieldHegiht)
-        self.agents: List[Agent] = [Agent(name='Bob'), Agent(name='Patrick')]
+        self.agents: List[Agent] = [Agent(name='Bob')]#, Agent(name='Patrick')]
         self.field.add_random_holes(number_of_holes)
         self.field.add_random_orbs(number_of_height)
 
@@ -34,81 +35,64 @@ class Game:
         
         if not self.field.get_remaining_orbs():
             return True
-        for agent in self.agents:
-            if agent.hang_on:
-                agent.hang_on -= 1
-                continue
-            if agent.moves >= self.MAX_MOVES:
-                continue
-            print(f"A{agent.id}", " -> ", agent.direction)
+        agent = self.agents[0]
+    
+        print(f"A{agent.id}", " -> ", agent.direction)
 
-            agent.look_around(self.field)
-            print('Discoveries: ', len(agent.discoveries))
-            candidate_transfer_fulfilled = False
-            if not agent.candidate:
-                if not agent.reach_to_candidate:
-                    agent.reach_to_candidate = agent.find_next_best_displacement()
-                if agent.reach_to_candidate:
-                    '''set the agent the same position as orb to start holding ti'''
-                    reached = agent.move_forward_to(agent.reach_to_candidate.orb, self.agents)
-                    if reached == 1:
-                        agent.candidate = agent.reach_to_candidate
-                        agent.reach_to_candidate = None
-                        agent.no_move_rep = 0
-                    elif reached == -1:
-                        agent.no_move_rep += 1
-                    else:
-                        agent.no_move_rep = 0
-                    if agent.no_move_rep >= agent.NO_MOVE_REP_MAX:
-                        agent.force_move(self.field, self.agents)
-                        agent.no_move_rep = 0
-                    continue
-            else:
-                # if there is agent.candidate from before
-                candidate_transfer_fulfilled = agent.direct_into(agent.candidate)
-            print("Current agent.candidate: ", agent.candidate)
-            if not candidate_transfer_fulfilled:
-                r = agent.move(self.field, agent.candidate, self.agents) # move one step closer to near hole
-                if r == -1:
-                    agent.no_move_rep += 1
-                    agent.hang_on = 3
-                else:
-                    agent.no_move_rep = 0
-
-                if agent.no_move_rep >= agent.NO_MOVE_REP_MAX:
-                    agent.force_move(self.field, self.agents)
-                    agent.no_move_rep = 0
-
-            thrown_orb = agent.try_to_sabotage(self.field)
-            if thrown_orb:
-                for ag in self.agents:
-                    if ag.candidate is not None and ag.candidate.orb == thrown_orb:
-                        ag.candidate = None
-                    ag.forget(thrown_orb, just_entity_itself=True)
-
-            do_drop = False
-            if agent.candidate and agent.candidate.fulfilled():
-                do_drop = True
+        agent.look_around(self.field)
+        try:
+            if agent.reach_to_candidate:
+                reached = agent.move_forward_to(agent.reach_to_candidate.orb)
+                if reached:
+                    agent.candidate = agent.reach_to_candidate
+                    agent.reach_to_candidate = None
+                    reached = False
             elif agent.candidate:
-                cell = self.field.get_cell(agent.position)
-                for entity in cell:
-                    if isinstance(entity, Hole) and entity.has_room():
-                        do_drop = True
-                        agent.candidate.hole = entity
-
-            if candidate_transfer_fulfilled or do_drop:
-                try:
+                reached = agent.direct_into(agent.candidate)
+                if not reached:
+                    agent.move(self.field, agent.candidate, self.agents)
+                agent.moves += 1
+                if agent.moves >= self.MAX_MOVES:
+                    return True
+                if reached or agent.candidate.fulfilled():
                     agent.candidate.drop(agent.id)
                     agent.forget(agent.candidate.orb)  # this will make agent forget the orb and hole both
                     self.field.shake(self.agents)
                     agent.candidate = None
-                except Exception as ex:
-                    print("ERROR", ex)
-                    agent.candidate.hole = None
-        self.field.set_final_stats(self.agents)
-        return self.agents[0].moves >= self.MAX_MOVES and self.agents[1].moves >= self.MAX_MOVES
+                    agent.reach_to_candidate = None
+            else:
+                prompt = agent.hugchat_data()
+                print(prompt)
+                print('### Bob is thinking ... ###')
+                hugchat_decision = str(agent.ask_hugchat("Here is the current Position of objects that Bob knows:\n" + prompt))
+                objects = hugchat_decision.split()
+                if len(objects) == 2:
+                    orb_id = int(objects[0][1:])
+                    orb = self.field.get_orb_by_id(orb_id)
+                    hole_id = int(objects[1][1:])
+                    hole = self.field.get_hole_by_id(hole_id)
+                    print(orb, hole)
+                    agent.reach_to_candidate = Candidate(orb, hole)
+                    
+                else:
+                    if agent.candidate:
+                        agent.candidate.hole = None
+                    agent.candidate = None
+                    agent.direction = Direction.From(int(hugchat_decision))
+                    agent.move(self.field, None, self.agents)
+        except Exception as ex:
+            print(ex)
+            if agent.candidate:
+                agent.candidate.hole = None
+            agent.candidate = None
 
+        self.field.set_final_stats(self.agents)
+
+        return agent.moves >= Game.MAX_MOVES
+        
     def simulate(self):
+        r = self.agents[0].activate_hugchat()
+
         self.field.run(game)
         if self.field.type != FieldType.GUI:
             while True:

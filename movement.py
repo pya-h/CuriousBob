@@ -10,10 +10,10 @@ class Coordinates:
         self.y: int = y
 
     @staticmethod
-    def Random(x_max = 7, y_max = 7):
+    def Random(x_max = 5, y_max = 5):
         return Coordinates(randint(1, x_max), randint(1, y_max))
 
-    def Randomize(self, x_max = 7, y_max = 7):
+    def Randomize(self, x_max = 5, y_max = 5):
         self.x, self.y = randint(1, x_max), randint(1, y_max)
 
     def __eq__(self, other):
